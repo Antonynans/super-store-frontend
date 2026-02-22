@@ -1,5 +1,4 @@
 <h3 align="center">Super Store</h3>
-![preview](https://youtu.be/5bkqSN-s_jI)
 
 <p align="center">
   A fully responsive e-commerce platform built with the React and styled with Tailwind CSS
@@ -12,6 +11,7 @@
   <a href="https://github.com/Antonynans/super-store-frontend/issues">Request Feature</a>
 </p>
 
+![preview](https://youtu.be/5bkqSN-s_jI)
 [![React](https://img.shields.io/badge/React-18-blue?logo=react)](https://react.dev)
 [![Node.js](https://img.shields.io/badge/Node.js-18-green?logo=node.js)](https://nodejs.org)
 [![MongoDB](https://img.shields.io/badge/MongoDB-5-green?logo=mongodb)](https://www.mongodb.com)
@@ -54,23 +54,7 @@
 - React Icons
 - Axios
 
-**Backend:**
-
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT Authentication
-- Bcryptjs
-- Cloudinary (Image Upload)
-
 ## Installation
-
-### Prerequisites
-
-- Node.js (v18 or higher)
-- MongoDB
-- npm or yarn
 
 ### Frontend Setup
 
@@ -113,4 +97,4 @@ If you have a suggestion that would make this better, please fork the repo and c
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-#### Author: [@YourUsername](https://github.com/yourusername)
+#### Author: [@Antonynans](https://Github.com/Antonynans)
