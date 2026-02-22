@@ -11,7 +11,14 @@
   <a href="https://github.com/Antonynans/super-store-frontend/issues">Request Feature</a>
 </p>
 
-![preview](https://youtu.be/5bkqSN-s_jI)
+## 🎥 Project Demo
+
+<p align="center">
+  <a href="https://youtu.be/5bkqSN-s_jI">
+    <img src="https://img.youtube.com/vi/5bkqSN-s_jI/maxresdefault.jpg" width="900"/>
+  </a>
+</p>
+
 [![React](https://img.shields.io/badge/React-18-blue?logo=react)](https://react.dev)
 [![Node.js](https://img.shields.io/badge/Node.js-18-green?logo=node.js)](https://nodejs.org)
 [![MongoDB](https://img.shields.io/badge/MongoDB-5-green?logo=mongodb)](https://www.mongodb.com)
