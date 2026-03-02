@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  useCreateProductMutation,
-} from "../../redux/api/productApiSlice";
+import { useCreateProductMutation } from "../../redux/api/productApiSlice";
 import { useUploadProductImageMutation } from "../../redux/api/uploadApiSlice";
 import { useFetchCategoriesQuery } from "../../redux/api/categoryApiSlice";
 import { toast } from "react-toastify";
-import AdminMenu from "./AdminMenu";
 
 const ProductList = () => {
   const [formData, setFormData] = useState({
@@ -14,10 +11,9 @@ const ProductList = () => {
     description: "",
     price: "",
     category: "",
-    quantity: "",
     brand: "",
     countInStock: "",
-    image: "", // Cloudinary URL
+    image: "", 
   });
 
   const [imagePreview, setImagePreview] = useState("");
@@ -28,12 +24,10 @@ const ProductList = () => {
   const [createProduct] = useCreateProductMutation();
   const { data: categories = [] } = useFetchCategoriesQuery();
 
-  // ✅ FIX 1: Handle image upload properly
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Show preview
     const reader = new FileReader();
     reader.onloadend = () => {
       setImagePreview(reader.result);
@@ -48,10 +42,9 @@ const ProductList = () => {
 
       const res = await uploadProductImage(uploadFormData).unwrap();
 
-      // ✅ FIX 2: Save Cloudinary URL to formData, not just image state
       setFormData((prev) => ({
         ...prev,
-        image: res.image, // Cloudinary URL
+        image: res.image, 
       }));
 
       toast.success("Image uploaded successfully!", {
@@ -69,7 +62,6 @@ const ProductList = () => {
     }
   };
 
-  // ✅ FIX 3: Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -78,12 +70,15 @@ const ProductList = () => {
     }));
   };
 
-  // ✅ FIX 4: Send plain object, NOT FormData
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate required fields
-    if (!formData.name || !formData.price || !formData.category || !formData.image) {
+    if (
+      !formData.name ||
+      !formData.price ||
+      !formData.category ||
+      !formData.image
+    ) {
       toast.error("Please fill all required fields and upload an image", {
         position: "top-right",
         autoClose: 2000,
@@ -92,7 +87,6 @@ const ProductList = () => {
     }
 
     try {
-      // ✅ Send plain object, not FormData
       const data = await createProduct(formData).unwrap();
 
       toast.success(`${data.name} created successfully!`, {
@@ -100,13 +94,11 @@ const ProductList = () => {
         autoClose: 2000,
       });
 
-      // Reset form
       setFormData({
         name: "",
         description: "",
         price: "",
         category: "",
-        quantity: "",
         brand: "",
         countInStock: "",
         image: "",
@@ -124,167 +116,192 @@ const ProductList = () => {
   };
 
   return (
-    <div className="container xl:mx-[9rem] sm:mx-[0]">
-      <div className="flex flex-col md:flex-row">
-        <AdminMenu />
-        <div className="md:w-3/4 p-3">
-          <div className="h-12 text-white text-2xl font-bold mb-6">
-            Create Product
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="mt-8">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              Create New Product
+            </h1>
+            <p className="text-gray-600">Add a new product to your store</p>
           </div>
 
-          {/* Image Preview */}
-          {imagePreview && (
-            <div className="text-center mb-6">
-              <img
-                src={imagePreview}
-                alt="product preview"
-                className="block mx-auto max-h-[300px] rounded-lg"
-              />
-            </div>
-          )}
-
-          {/* Image Upload */}
-          <div className="mb-6">
-            <label className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 block w-full text-center rounded-lg cursor-pointer font-bold transition">
-              {uploading ? "Uploading..." : "Upload Image"}
-              <input
-                type="file"
-                name="image"
-                accept="image/*"
-                onChange={handleImageUpload}
-                disabled={uploading}
-                className="hidden"
-              />
-            </label>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4 p-3">
-            {/* Name and Price */}
-            <div className="flex flex-wrap gap-10">
-              <div className="flex-1">
-                <label htmlFor="name" className="text-white font-semibold">
-                  Name *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="p-4 mt-2 w-full border rounded-lg bg-[#101011] text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Product name"
-                />
+          <div className="bg-white rounded-2xl shadow-md p-8">
+            {imagePreview && (
+              <div className="mb-8 text-center">
+                <div className="flex justify-center">
+                  <img
+                    src={imagePreview}
+                    alt="product preview"
+                    className="max-h-[300px] rounded-xl shadow-lg"
+                  />
+                </div>
               </div>
-              <div className="flex-1">
-                <label htmlFor="price" className="text-white font-semibold">
-                  Price *
-                </label>
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  required
-                  step="0.01"
-                  className="p-4 mt-2 w-full border rounded-lg bg-[#101011] text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="0.00"
-                />
-              </div>
-            </div>
+            )}
 
-            {/* Quantity and Brand */}
-            <div className="flex flex-wrap gap-10">
-              <div className="flex-1">
-                <label htmlFor="quantity" className="text-white font-semibold">
-                  Quantity
-                </label>
+            <div className="mb-8">
+              <label className="relative block border-2 border-dashed border-pink-300 rounded-2xl p-8 text-center cursor-pointer hover:bg-pink-50 transition bg-pink-50/50">
+                <div className="flex flex-col items-center">
+                  <svg
+                    className="w-12 h-12 text-pink-500 mb-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                  <span className="text-gray-900 font-bold text-lg">
+                    {uploading ? "Uploading..." : "Upload Product Image"}
+                  </span>
+                  <span className="text-gray-600 text-sm mt-1">
+                    PNG, JPG up to 5MB
+                  </span>
+                </div>
                 <input
-                  type="number"
-                  name="quantity"
-                  value={formData.quantity}
-                  onChange={handleInputChange}
-                  min="1"
-                  className="p-4 mt-2 w-full border rounded-lg bg-[#101011] text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="0"
+                  type="file"
+                  name="image"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                  className="hidden"
                 />
-              </div>
-              <div className="flex-1">
-                <label htmlFor="brand" className="text-white font-semibold">
-                  Brand
-                </label>
-                <input
-                  type="text"
-                  name="brand"
-                  value={formData.brand}
-                  onChange={handleInputChange}
-                  className="p-4 mt-2 w-full border rounded-lg bg-[#101011] text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Brand name"
-                />
-              </div>
-            </div>
-
-            {/* Description */}
-            <div>
-              <label htmlFor="description" className="text-white font-semibold">
-                Description
               </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                rows="4"
-                className="p-2 mt-2 bg-[#101011] border rounded-lg w-full text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Product description"
-              />
             </div>
 
-            {/* Stock and Category */}
-            <div className="flex flex-wrap gap-10">
-              <div className="flex-1">
-                <label htmlFor="countInStock" className="text-white font-semibold">
-                  Count In Stock
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-gray-900 font-semibold mb-2"
+                  >
+                    Product Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    placeholder="Enter product name"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="price"
+                    className="block text-gray-900 font-semibold mb-2"
+                  >
+                    Price * ($)
+                  </label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    required
+                    step="0.01"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+                <div>
+                  <label
+                    htmlFor="brand"
+                    className="block text-gray-900 font-semibold mb-2"
+                  >
+                    Brand
+                  </label>
+                  <input
+                    type="text"
+                    name="brand"
+                    value={formData.brand}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    placeholder="Enter brand name"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="description"
+                  className="block text-gray-900 font-semibold mb-2"
+                >
+                  Description
                 </label>
-                <input
-                  type="number"
-                  name="countInStock"
-                  value={formData.countInStock}
+                <textarea
+                  name="description"
+                  value={formData.description}
                   onChange={handleInputChange}
-                  className="p-4 mt-2 w-full border rounded-lg bg-[#101011] text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="0"
+                  rows="4"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  placeholder="Describe your product..."
                 />
               </div>
 
-              <div className="flex-1">
-                <label htmlFor="category" className="text-white font-semibold">
-                  Category *
-                </label>
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  required
-                  className="p-4 mt-2 w-full border rounded-lg bg-[#101011] text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Category</option>
-                  {categories?.map((c) => (
-                    <option key={c._id} value={c._id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label
+                    htmlFor="countInStock"
+                    className="block text-gray-900 font-semibold mb-2"
+                  >
+                    Stock Count
+                  </label>
+                  <input
+                    type="number"
+                    name="countInStock"
+                    value={formData.countInStock}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    placeholder="0"
+                  />
+                </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={uploading}
-              className="py-4 px-10 mt-5 rounded-lg text-lg font-bold bg-green-600 hover:bg-green-700 disabled:opacity-50 transition text-white"
-            >
-              Create Product
-            </button>
-          </form>
+                <div>
+                  <label
+                    htmlFor="category"
+                    className="block text-gray-900 font-semibold mb-2"
+                  >
+                    Category *
+                  </label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  >
+                    <option value="">Select a category</option>
+                    {categories?.map((c) => (
+                      <option key={c._id} value={c._id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-4">
+                <button
+                  type="submit"
+                  disabled={uploading}
+                  className="flex-1 py-3 px-8 rounded-xl text-lg font-bold bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 disabled:opacity-50 transition text-white shadow-md"
+                >
+                  {uploading ? "Processing..." : "Create Product"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

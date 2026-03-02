@@ -1,87 +1,240 @@
 import { Link } from "react-router-dom";
 import moment from "moment";
+import { useState, useMemo } from "react";
 import { useAllProductsQuery } from "../../redux/api/productApiSlice";
-import AdminMenu from "./AdminMenu";
+import Loader from "../../components/Loader";
 
 const AllProducts = () => {
   const { data: products, isLoading, isError } = useAllProductsQuery();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const paginationData = useMemo(() => {
+    if (!products) return { paginatedProducts: [], totalPages: 0 };
+
+    const totalPages = Math.ceil(products.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedProducts = products.slice(startIndex, endIndex);
+
+    return { paginatedProducts, totalPages };
+  }, [products, currentPage]);
+
+  const { paginatedProducts, totalPages } = paginationData;
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const goToPage = (page) => {
+    setCurrentPage(page);
+  };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <Loader />
+      </div>
+    );
   }
 
   if (isError) {
-    return <div>Error loading products</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-red-600 text-lg font-semibold">
+          Error loading products
+        </div>
+      </div>
+    );
   }
 
   return (
     <>
-      <div className="container mx-[9rem]">
-        <div className="flex flex-col  md:flex-row">
-          <div className="p-3">
-            <div className="ml-[2rem] text-xl font-bold h-12">
-              All Products ({products.length})
-            </div>
-            <div className="flex flex-wrap justify-around items-center">
-              {products.map((product) => (
-                <Link
-                  key={product._id}
-                  to={`/admin/product/update/${product._id}`}
-                  className="block mb-4 overflow-hidden"
-                >
-                  <div className="flex">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-[10rem] object-cover"
-                    />
-                    <div className="p-4 flex flex-col justify-around">
-                      <div className="flex justify-between">
-                        <h5 className="text-xl font-semibold mb-2">
-                          {product?.name}
-                        </h5>
-
-                        <p className="text-gray-400 text-xs">
-                          {moment(product.createdAt).format("MMMM Do YYYY")}
-                        </p>
-                      </div>
-
-                      <p className="text-gray-400 xl:w-[30rem] lg:w-[30rem] md:w-[20rem] sm:w-[10rem] text-sm mb-4">
-                        {product?.description?.substring(0, 160)}...
-                      </p>
-
-                      <div className="flex justify-between">
-                        <Link
-                          to={`/admin/product/update/${product._id}`}
-                          className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-pink-700 rounded-lg hover:bg-pink-800 focus:ring-4 focus:outline-none focus:ring-pink-300 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800"
-                        >
-                          Update Product
-                          <svg
-                            className="w-3.5 h-3.5 ml-2"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 14 10"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M1 5h12m0 0L9 1m4 4L9 9"
-                            />
-                          </svg>
-                        </Link>
-                        <p>$ {product?.price}</p>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+        <div className="max-w-7xl mx-auto mt-8">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              All Products
+            </h1>
+            <p className="text-gray-600">
+              Manage and update all products in your store • Total:{" "}
+              <span className="font-semibold">{products?.length || 0}</span>
+            </p>
           </div>
-          <div className="md:w-1/4 p-3 mt-2">
-            <AdminMenu />
+
+          <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-200 text-gray-900 border-b border-gray-300">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-sm font-semibold">
+                      Image
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold">
+                      Name
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold">
+                      Brand
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold">
+                      Price
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold">
+                      Stock
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold">
+                      Created
+                    </th>
+                    <th className="px-6 py-4 text-center text-sm font-semibold">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {paginatedProducts && paginatedProducts.length > 0 ? (
+                    paginatedProducts.map((product) => (
+                      <tr
+                        key={product._id}
+                        className="hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="px-6 py-4">
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-16 h-16 rounded-lg object-cover"
+                          />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div>
+                            <p className="font-semibold text-gray-900">
+                              {product.name}
+                            </p>
+                            <p className="text-sm text-gray-500 mt-1">
+                              {product.description?.substring(0, 40)}...
+                            </p>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-sm text-gray-700">
+                            {product.brand || "N/A"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="font-semibold text-pink-600">
+                            ${product.price?.toFixed(2)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                              product.countInStock > 0
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {product.countInStock || 0}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-sm text-gray-600">
+                            {moment(product.createdAt).format("MMM Do YY")}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <Link to={`/admin/product/update/${product._id}`}>
+                            <button className="inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-pink-500 hover:bg-pink-600 rounded-lg transition-colors">
+                              Edit
+                              <svg
+                                className="w-4 h-4 ml-2"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M9 5l7 7-7 7"
+                                />
+                              </svg>
+                            </button>
+                          </Link>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="7"
+                        className="px-6 py-8 text-center text-gray-500"
+                      >
+                        No products found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between p-6 bg-gray-100 border-t border-gray-200">
+                <div className="text-sm text-gray-700">
+                  Page{" "}
+                  <span className="font-semibold text-gray-900">
+                    {currentPage}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-semibold text-gray-900">
+                    {totalPages}
+                  </span>{" "}
+                  • Showing{" "}
+                  <span className="font-semibold text-gray-900">
+                    {paginatedProducts.length}
+                  </span>{" "}
+                  products
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 disabled:text-gray-400 text-gray-900 rounded-lg font-semibold transition-colors"
+                  >
+                    ← Previous
+                  </button>
+
+                  <div className="flex gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => (
+                        <button
+                          key={page}
+                          onClick={() => goToPage(page)}
+                          className={`w-10 h-10 rounded-lg font-semibold transition-colors ${
+                            currentPage === page
+                              ? "bg-pink-500 text-white"
+                              : "bg-gray-300 hover:bg-gray-400 text-gray-900"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      ),
+                    )}
+                  </div>
+
+                  <button
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 disabled:text-gray-400 text-gray-900 rounded-lg font-semibold transition-colors"
+                  >
+                    Next →
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

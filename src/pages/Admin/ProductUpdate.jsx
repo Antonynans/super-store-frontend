@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import AdminMenu from "./AdminMenu";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useUpdateProductMutation,
@@ -14,31 +13,26 @@ const AdminProductUpdate = () => {
   const params = useParams();
   const navigate = useNavigate();
 
-  // Queries
   const { data: productData } = useGetProductByIdQuery(params._id);
   const { data: categories = [] } = useFetchCategoriesQuery();
 
-  // Mutations
   const [uploadProductImage, { isLoading: uploading }] =
     useUploadProductImageMutation();
   const [updateProduct] = useUpdateProductMutation();
   const [deleteProduct] = useDeleteProductMutation();
 
-  // State
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     price: "",
     category: "",
-    quantity: "",
     brand: "",
     countInStock: "",
-    image: "", // Cloudinary URL
+    image: "",
   });
 
   const [imagePreview, setImagePreview] = useState("");
 
-  // Update form when product data loads
   useEffect(() => {
     if (productData && productData._id) {
       setFormData({
@@ -46,7 +40,6 @@ const AdminProductUpdate = () => {
         description: productData.description,
         price: productData.price,
         category: productData.category?._id || "",
-        quantity: productData.quantity,
         brand: productData.brand,
         countInStock: productData.countInStock,
         image: productData.image,
@@ -55,12 +48,10 @@ const AdminProductUpdate = () => {
     }
   }, [productData]);
 
-  // Handle file upload to Cloudinary
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Show preview
     const reader = new FileReader();
     reader.onloadend = () => {
       setImagePreview(reader.result);
@@ -68,17 +59,14 @@ const AdminProductUpdate = () => {
     reader.readAsDataURL(file);
 
     try {
-      // Create FormData for file upload
       const uploadFormData = new FormData();
       uploadFormData.append("image", file);
 
-      // Upload to Cloudinary
       const uploadRes = await uploadProductImage(uploadFormData).unwrap();
 
-      // Set the Cloudinary URL in form data
       setFormData((prev) => ({
         ...prev,
-        image: uploadRes.image, // Cloudinary URL
+        image: uploadRes.image,
       }));
 
       toast.success("Image uploaded successfully!", {
@@ -94,7 +82,6 @@ const AdminProductUpdate = () => {
     }
   };
 
-  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -103,7 +90,6 @@ const AdminProductUpdate = () => {
     }));
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -116,7 +102,6 @@ const AdminProductUpdate = () => {
     }
 
     try {
-      // Send plain object to backend (NOT FormData)
       const result = await updateProduct({
         productId: params._id,
         ...formData,
@@ -137,7 +122,6 @@ const AdminProductUpdate = () => {
     }
   };
 
-  // Handle product deletion
   const handleDelete = async () => {
     try {
       const confirmed = window.confirm(
@@ -164,29 +148,51 @@ const AdminProductUpdate = () => {
 
   return (
     <>
-      <div className="container xl:mx-[9rem] sm:mx-[0]">
-        <div className="flex flex-col md:flex-row">
-          <AdminMenu />
-          <div className="md:w-3/4 p-3">
-            <div className="h-12 text-white text-2xl font-bold mb-6">
-              Update / Delete Product
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="mt-8">
+            <div className="mb-8">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                Update Product
+              </h1>
+              <p className="text-gray-600">Edit or delete product details</p>
             </div>
 
-            {/* Image Preview */}
             {imagePreview && (
-              <div className="text-center mb-6">
-                <img
-                  src={imagePreview}
-                  alt="product preview"
-                  className="block mx-auto w-full h-[300px] object-cover rounded-lg"
-                />
+              <div className="mb-8 text-center">
+                <div className="flex justify-center">
+                  <img
+                    src={imagePreview}
+                    alt="product preview"
+                    className="max-h-[300px] rounded-xl shadow-lg"
+                  />
+                </div>
               </div>
             )}
 
-            {/* Image Upload */}
-            <div className="mb-6">
-              <label className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 block w-full text-center rounded-lg cursor-pointer font-bold transition">
-                {uploading ? "Uploading..." : "Upload Image"}
+            <div className="mb-8">
+              <label className="relative block border-2 border-dashed border-pink-300 rounded-2xl p-8 text-center cursor-pointer hover:bg-pink-50 transition bg-pink-50/50">
+                <div className="flex flex-col items-center">
+                  <svg
+                    className="w-12 h-12 text-pink-500 mb-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                  <span className="text-gray-900 font-bold text-lg">
+                    {uploading ? "Uploading..." : "Upload Product Image"}
+                  </span>
+                  <span className="text-gray-600 text-sm mt-1">
+                    PNG, JPG up to 5MB
+                  </span>
+                </div>
                 <input
                   type="file"
                   name="image"
@@ -198,12 +204,10 @@ const AdminProductUpdate = () => {
               </label>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Name and Price */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-white font-semibold block mb-2">
+                  <label className="block text-gray-900 font-semibold mb-2">
                     Product Name *
                   </label>
                   <input
@@ -212,13 +216,27 @@ const AdminProductUpdate = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full p-3 border rounded-lg bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                   />
                 </div>
-
                 <div>
-                  <label className="text-white font-semibold block mb-2">
-                    Price *
+                  <label className="block text-gray-900 font-semibold mb-2">
+                    Brand
+                  </label>
+                  <input
+                    type="text"
+                    name="brand"
+                    value={formData.brand}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-gray-900 font-semibold mb-2">
+                    Price * ($)
                   </label>
                   <input
                     type="number"
@@ -227,72 +245,23 @@ const AdminProductUpdate = () => {
                     onChange={handleInputChange}
                     required
                     step="0.01"
-                    className="w-full p-3 border rounded-lg bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                   />
                 </div>
-              </div>
-
-              {/* Quantity and Brand */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-white font-semibold block mb-2">
-                    Quantity
-                  </label>
-                  <input
-                    type="number"
-                    name="quantity"
-                    value={formData.quantity}
-                    onChange={handleInputChange}
-                    min="1"
-                    className="w-full p-3 border rounded-lg bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-white font-semibold block mb-2">
-                    Brand
-                  </label>
-                  <input
-                    type="text"
-                    name="brand"
-                    value={formData.brand}
-                    onChange={handleInputChange}
-                    className="w-full p-3 border rounded-lg bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="text-white font-semibold block mb-2">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  rows="4"
-                  className="w-full p-3 border rounded-lg bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Stock and Category */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-white font-semibold block mb-2">
-                    Count In Stock
+                  <label className="block text-gray-900 font-semibold mb-2">
+                    Stock Count
                   </label>
                   <input
                     type="number"
                     name="countInStock"
                     value={formData.countInStock}
                     onChange={handleInputChange}
-                    className="w-full p-3 border rounded-lg bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                   />
                 </div>
-
                 <div>
-                  <label className="text-white font-semibold block mb-2">
+                  <label className="block text-gray-900 font-semibold mb-2">
                     Category *
                   </label>
                   <select
@@ -300,9 +269,9 @@ const AdminProductUpdate = () => {
                     value={formData.category}
                     onChange={handleInputChange}
                     required
-                    className="w-full p-3 border rounded-lg bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                   >
-                    <option value="">Select Category</option>
+                    <option value="">Select a category</option>
                     {categories?.map((c) => (
                       <option key={c._id} value={c._id}>
                         {c.name}
@@ -312,20 +281,32 @@ const AdminProductUpdate = () => {
                 </div>
               </div>
 
-              {/* Buttons */}
+              <div>
+                <label className="block text-gray-900 font-semibold mb-2">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows="4"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                />
+              </div>
+
               <div className="flex gap-4 pt-6">
                 <button
                   type="submit"
                   disabled={uploading}
-                  className="flex-1 py-3 px-6 rounded-lg text-white font-bold bg-green-600 hover:bg-green-700 disabled:opacity-50 transition"
+                  className="flex-1 py-3 px-8 rounded-xl text-lg font-bold bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 disabled:opacity-50 transition text-white shadow-md"
                 >
-                  Update Product
+                  {uploading ? "Processing..." : "Update Product"}
                 </button>
 
                 <button
                   type="button"
                   onClick={handleDelete}
-                  className="flex-1 py-3 px-6 rounded-lg text-white font-bold bg-red-600 hover:bg-red-700 transition"
+                  className="flex-1 py-3 px-8 rounded-xl text-lg font-bold bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition text-white shadow-md"
                 >
                   Delete Product
                 </button>
