@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../../components/Message";
 import ProgressSteps from "../../components/ProgressSteps";
-import Loader from "../../components/Loader";
 import { useCreateOrderMutation } from "../../redux/api/orderApiSlice";
 import { clearCartItems } from "../../redux/features/cart/cartSlice";
 import { FaClipboardList } from "react-icons/fa";
