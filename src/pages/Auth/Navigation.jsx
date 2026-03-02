@@ -8,13 +8,33 @@ import {
   AiOutlineMenu,
   AiOutlineClose,
 } from "react-icons/ai";
-import { FaHeart, FaUser, FaCog, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaHeart,
+  FaUser,
+  FaCog,
+  FaBox,
+  FaTag,
+  FaList,
+  FaTachometerAlt,
+  FaUsers,
+  FaShoppingCart,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../../redux/api/usersApiSlice";
 import { logout } from "../../redux/features/auth/authSlice";
 import FavoritesCount from "../Products/FavoritesCount";
+
+const menuItems = [
+  { to: "/admin/dashboard", label: "Dashboard", icon: FaTachometerAlt },
+  { to: "/admin/categorylist", label: "Categories", icon: FaTag },
+  { to: "/admin/productlist", label: "Create Product", icon: FaBox },
+  { to: "/admin/allproductslist", label: "All Products", icon: FaList },
+  { to: "/admin/userlist", label: "Users", icon: FaUsers },
+  { to: "/admin/orderlist", label: "Orders", icon: FaShoppingCart },
+];
 
 const Navigation = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -80,7 +100,7 @@ const Navigation = () => {
             to="/"
             className="text-2xl font-bold text-blue-600 hover:opacity-80 transition-opacity"
           >
-            Store
+            SuperStore
           </Link>
 
           <div className="hidden md:flex items-center gap-1">
@@ -160,34 +180,29 @@ const Navigation = () => {
                           <div className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wide">
                             Admin Menu
                           </div>
-                          <Link
-                            to="/admin/dashboard"
-                            className={`${adminItemClass} flex items-center gap-2`}
-                          >
-                            <FaCog size={16} className="text-purple-600" />
-                            <span>Dashboard</span>
-                          </Link>
-                          <Link
-                            to="/admin/productlist"
-                            className={adminItemClass}
-                          >
-                            <span className="ml-6">Products</span>
-                          </Link>
-                          <Link
-                            to="/admin/categorylist"
-                            className={adminItemClass}
-                          >
-                            <span className="ml-6">Categories</span>
-                          </Link>
-                          <Link
-                            to="/admin/orderlist"
-                            className={adminItemClass}
-                          >
-                            <span className="ml-6">Orders</span>
-                          </Link>
-                          <Link to="/admin/userlist" className={adminItemClass}>
-                            <span className="ml-6">Users</span>
-                          </Link>
+                          <ul className="list-none space-y-2">
+                            {menuItems.map((item) => {
+                              const Icon = item.icon;
+                              return (
+                                <li key={item.to}>
+                                  <NavLink
+                                    to={item.to}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className={({ isActive }) =>
+                                      `flex items-center gap-3 py-3 px-4 rounded-lg font-semibold transition-colors ${
+                                        isActive
+                                          ? "bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-md"
+                                          : "text-gray-700 hover:bg-gray-100"
+                                      }`
+                                    }
+                                  >
+                                    <Icon className="w-5 h-5" />
+                                    {item.label}
+                                  </NavLink>
+                                </li>
+                              );
+                            })}
+                          </ul>
                           <hr className="my-2" />
                         </>
                       )}
