@@ -36,7 +36,7 @@ const Order = () => {
   } = useGetPaypalClientIdQuery();
 
   useEffect(() => {
-    if (!errorPayPal && !loadingPaPal && paypal.clientId) {
+    if (!errorPayPal && !loadingPaPal && paypal?.clientId) {
       const loadingPaPalScript = async () => {
         paypalDispatch({
           type: "resetOptions",
@@ -49,9 +49,7 @@ const Order = () => {
       };
 
       if (order && !order.isPaid) {
-        if (!window.paypal) {
-          loadingPaPalScript();
-        }
+        loadingPaPalScript();
       }
     }
   }, [errorPayPal, loadingPaPal, order, paypal, paypalDispatch]);
@@ -222,19 +220,24 @@ const Order = () => {
         </div>
 
         {!order.isPaid && (
-          <div>
-            {loadingPay && <Loader />}{" "}
-            {isPending ? (
+          <div className="mt-4">
+            {loadingPay && <Loader />}
+            {loadingPaPal ? (
+              <Loader />
+            ) : errorPayPal ? (
+              <Messsage variant="danger">
+                Unable to load PayPal. Please try again later.
+              </Messsage>
+            ) : isPending ? (
               <Loader />
             ) : (
               <div>
-                <div>
-                  <PayPalButtons
-                    createOrder={createOrder}
-                    onApprove={onApprove}
-                    onError={onError}
-                  ></PayPalButtons>
-                </div>
+                <h3 className="text-lg font-semibold mb-4">Payment</h3>
+                <PayPalButtons
+                  createOrder={createOrder}
+                  onApprove={onApprove}
+                  onError={onError}
+                ></PayPalButtons>
               </div>
             )}
           </div>
