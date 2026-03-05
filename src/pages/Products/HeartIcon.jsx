@@ -1,54 +1,83 @@
 import { useEffect } from "react";
-import { FaHeart, FaRegHeart, FaVaadin } from "react-icons/fa";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
 import {
   addToFavorites,
   removeFromFavorites,
-  setFavorites,
+  setFavoritesFromBackend,
 } from "../../redux/features/favorites/favoriteSlice";
 
 import {
-  addFavoriteToLocalStorage,
-  getFavoritesFromLocalStorage,
-  removeFavoriteFromLocalStorage,
-} from "../../Utils/localStorage";
+  useAddToWishlistMutation,
+  useRemoveFromWishlistMutation,
+  useGetWishlistQuery,
+} from "../../redux/api/wishlistApiSlice";
 
 const HeartIcon = ({ product }) => {
   const dispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.auth);
   const favorites = useSelector((state) => state.favorites) || [];
   const isFavorite = favorites.some((p) => p._id === product._id);
 
-  useEffect(() => {
-    const favoritesFromLocalStorage = getFavoritesFromLocalStorage();
-    dispatch(setFavorites(favoritesFromLocalStorage));
-  }, []);
+  const [addToWishlist, { isLoading: addingToWishlist }] =
+    useAddToWishlistMutation();
+  const [removeFromWishlist, { isLoading: removingFromWishlist }] =
+    useRemoveFromWishlistMutation();
+  const { data: wishlist } = useGetWishlistQuery(undefined, {
+    skip: !userInfo,
+  });
 
-  const toggleFavorites = (e) => {
+  useEffect(() => {
+    if (userInfo && wishlist?.products) {
+      dispatch(setFavoritesFromBackend(wishlist));
+    }
+  }, [wishlist, userInfo, dispatch]);
+
+  const toggleFavorites = async (e) => {
     e.stopPropagation();
     e.preventDefault();
 
-    if (isFavorite) {
-      dispatch(removeFromFavorites(product));
-      toast.error("Item removed from wishlist", {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 2000,
-    });
-      removeFavoriteFromLocalStorage(product._id);
-    } else {
-      dispatch(addToFavorites(product));
-      toast.success("Item added to wishlist", {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 2000,
+    if (!userInfo) {
+      toast.error("Please login to add items to wishlist", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
       });
-      addFavoriteToLocalStorage(product);
+      return;
+    }
+
+    try {
+      if (isFavorite) {
+        await removeFromWishlist(product._id);
+        dispatch(removeFromFavorites(product));
+        toast.success("Item removed from wishlist", {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 2000,
+        });
+      } else {
+        await addToWishlist({ productId: product._id });
+        dispatch(addToFavorites(product));
+        toast.success("Item added to wishlist", {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 2000,
+        });
+      }
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to update wishlist", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
     }
   };
 
+  const isLoading = addingToWishlist || removingFromWishlist;
+
   return (
     <div
-      className="absolute top-2 right-5 cursor-pointer hover:scale-125 transition-transform duration-300 z-10"
+      className={`absolute cursor-pointer hover:scale-125 transition-all duration-300 z-10 ${
+        isLoading ? "opacity-50 pointer-events-none" : ""
+      }`}
       onClick={toggleFavorites}
     >
       {isFavorite ? (
