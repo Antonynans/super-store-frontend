@@ -15,7 +15,7 @@ const cartSlice = createSlice({
 
       if (existItem) {
         state.cartItems = state.cartItems.map((x) =>
-          x._id === existItem._id ? item : x
+          x._id === existItem._id ? item : x,
         );
       } else {
         state.cartItems = [...state.cartItems, item];
@@ -44,6 +44,18 @@ const cartSlice = createSlice({
     },
 
     resetCart: (state) => (state = initialState),
+
+    setCartFromBackend: (state, action) => {
+      const backendCart = action.payload;
+      state.cartItems = backendCart.cartItems || [];
+      state.shippingAddress = backendCart.shippingAddress || {};
+      state.paymentMethod = backendCart.paymentMethod || "PayPal";
+      state.itemsPrice = backendCart.itemsPrice || 0;
+      state.shippingPrice = backendCart.shippingPrice || 0;
+      state.taxPrice = backendCart.taxPrice || 0;
+      state.totalPrice = backendCart.totalPrice || 0;
+      localStorage.setItem("cart", JSON.stringify(state));
+    },
   },
 });
 
@@ -54,6 +66,7 @@ export const {
   saveShippingAddress,
   clearCartItems,
   resetCart,
+  setCartFromBackend,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;
