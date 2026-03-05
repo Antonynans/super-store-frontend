@@ -65,10 +65,14 @@ const Header = () => {
       <div className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="mb-12">
+          <div className="flex items-center gap-2 justify-center">
+              <div className=" bg-yellow-400 text-yellow-900 rounded-full p-3 shadow-lg border-2 border-white">
+                    <FaStar size={20} className="fill-yellow-900" />
+                  </div>  
             <h2 className="text-4xl font-bold text-center text-gray-900">
-              <FaStar className="inline text-yellow-400 mr-3" />
-              Top Rated This Month
+             Top Rated This Month
             </h2>
+          </div>
           </div>
 
           {data && data.length > 0 ? (
@@ -77,9 +81,7 @@ const Header = () => {
                 <div key={product._id} className="group relative">
                   <ProductCard p={product} />
 
-                  <div className="absolute -top-3 -right-3 bg-yellow-400 text-yellow-900 rounded-full p-3 shadow-lg border-2 border-white">
-                    <FaStar size={20} className="fill-yellow-900" />
-                  </div>
+                 
                 </div>
               ))}
             </div>
