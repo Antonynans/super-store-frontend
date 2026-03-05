@@ -5,8 +5,11 @@ import { addToCart } from "../../redux/features/cart/cartSlice";
 import { toast } from "react-toastify";
 import HeartIcon from "./HeartIcon";
 import Ratings from "./Ratings";
+import { useState } from "react";
 
 const ProductCard = ({ p }) => {
+  const [hovered, setHovered] = useState(false);
+
   const dispatch = useDispatch();
 
   const addToCartHandler = (product, qty) => {
@@ -19,7 +22,12 @@ const ProductCard = ({ p }) => {
 
   return (
     <Link to={`/product/${p._id}`}>
-      <div className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer h-full flex flex-col">
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl  cursor-pointer h-full flex flex-col"
+        style={{ transform: hovered ? "translateY(-4px)" : "none" }}
+      >
         <div className="relative overflow-hidden bg-gray-100 h-64">
           <img
             className="cursor-pointer w-full h-full object-cover transition-transform duration-300 hover:scale-110"
@@ -31,28 +39,8 @@ const ProductCard = ({ p }) => {
             {p?.brand || "No Brand"}
           </span>
 
-          <div className="absolute top-3 right-3">
+          <div className="absolute top-3 right-8">
             <HeartIcon product={p} />
-          </div>
-
-          <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100">
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                if (p?.countInStock > 0) {
-                  addToCartHandler(p, 1);
-                }
-              }}
-              disabled={p?.countInStock === 0}
-              className={`${
-                p?.countInStock === 0
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              } text-white px-6 py-2 rounded-lg font-semibold flex items-center gap-2 transition`}
-            >
-              <AiOutlineShoppingCart size={20} />
-              {p?.countInStock === 0 ? "Out of Stock" : "Add to Cart"}
-            </button>
           </div>
         </div>
 
@@ -67,15 +55,6 @@ const ProductCard = ({ p }) => {
             {p?.description?.substring(0, 60)}...
           </p>
 
-          <div className="flex items-baseline gap-2 mb-4">
-            <span className="text-2xl font-bold text-gray-900">
-              {p?.price?.toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-              })}
-            </span>
-          </div>
-
           <div className="mb-4">
             {p?.countInStock > 0 ? (
               <span className="text-xs text-green-600 font-semibold">
@@ -88,56 +67,34 @@ const ProductCard = ({ p }) => {
             )}
           </div>
 
-          <div className="flex gap-2 md:hidden">
-            <Link
-              to={`/product/${p._id}`}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold text-sm transition text-center"
-            >
-              Details
-            </Link>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                if (p?.countInStock > 0) {
-                  addToCartHandler(p, 1);
-                }
-              }}
-              disabled={p?.countInStock === 0}
-              className={`flex-1 py-2 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-1 ${
-                p?.countInStock === 0
-                  ? "bg-gray-200 text-gray-400 cursor-not-allowed border-2 border-gray-300"
-                  : "border-2 border-blue-600 text-blue-600 hover:bg-blue-50"
-              }`}
-            >
-              <AiOutlineShoppingCart size={18} />
-              {p?.countInStock === 0 ? "Out" : "Add"}
-            </button>
-          </div>
-
-          <div className="hidden md:flex flex-col gap-3">
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                if (p?.countInStock > 0) {
-                  addToCartHandler(p, 1);
-                }
-              }}
-              disabled={p?.countInStock === 0}
-              className={`w-full py-2 rounded-lg font-semibold transition flex items-center justify-center gap-2 ${
-                p?.countInStock === 0
-                  ? "bg-gray-400 text-gray-600 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
-              }`}
-            >
-              <AiOutlineShoppingCart size={18} />
-              {p?.countInStock === 0 ? "Out of Stock" : "Add to Cart"}
-            </button>
-            <Link
-              to={`/product/${p._id}`}
-              className="w-full border-2 border-blue-600 text-blue-600 py-2 rounded-lg font-semibold hover:bg-blue-50 transition text-center"
-            >
-              View Details
-            </Link>
+          <div className="flex items-center justify-between">
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-gray-900">
+                {p?.price?.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
+              </span>
+            </div>
+            <div className="">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (p?.countInStock > 0) {
+                    addToCartHandler(p, 1);
+                  }
+                }}
+                disabled={p?.countInStock === 0}
+                className={`w-full rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2 py-2 px-4 ${
+                  p?.countInStock === 0
+                    ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                }`}
+              >
+                <AiOutlineShoppingCart size={18} />
+                {p?.countInStock === 0 ? "Out of Stock" : "Add to Cart"}
+              </button>
+            </div>
           </div>
         </div>
       </div>

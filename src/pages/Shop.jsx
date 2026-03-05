@@ -14,7 +14,7 @@ import ProductCard from "./Products/ProductCard";
 const Shop = () => {
   const dispatch = useDispatch();
   const { categories, products, checked, radio } = useSelector(
-    (state) => state.shop
+    (state) => state.shop,
   );
 
   const categoriesQuery = useFetchCategoriesQuery();
@@ -23,9 +23,8 @@ const Shop = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch all products without category filter initially
   const filteredProductsQuery = useGetFilteredProductsQuery({
-    checked: checked.length > 0 ? checked : [], // Pass empty array if no categories checked
+    checked: checked.length > 0 ? checked : [],
     radio,
   });
 
@@ -39,11 +38,6 @@ const Shop = () => {
     if (!filteredProductsQuery.isLoading && filteredProductsQuery.data) {
       let filtered = [...(filteredProductsQuery.data || [])];
 
-      // If NO categories are checked, show ALL products
-      // If categories ARE checked, the API already filtered them
-      // (the filteredProductsQuery handles category filtering on backend)
-
-      // Filter by price if provided
       if (priceFilter) {
         filtered = filtered.filter((product) => {
           return (
@@ -53,25 +47,25 @@ const Shop = () => {
         });
       }
 
-      // Filter by search query
       if (searchQuery) {
         filtered = filtered.filter((product) => {
           return (
             product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            product.description
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
             product.brand.toLowerCase().includes(searchQuery.toLowerCase())
           );
         });
       }
 
-      // Sort products
       if (sortBy === "price-low") {
         filtered = filtered.sort((a, b) => a.price - b.price);
       } else if (sortBy === "price-high") {
         filtered = filtered.sort((a, b) => b.price - a.price);
       } else if (sortBy === "newest") {
         filtered = filtered.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
         );
       }
 
@@ -90,7 +84,7 @@ const Shop = () => {
 
   const handleBrandClick = (brand) => {
     const productsByBrand = filteredProductsQuery.data?.filter(
-      (product) => product.brand === brand
+      (product) => product.brand === brand,
     );
     dispatch(setProducts(productsByBrand || []));
   };
@@ -107,8 +101,8 @@ const Shop = () => {
       new Set(
         filteredProductsQuery.data
           ?.map((product) => product.brand)
-          .filter((brand) => brand !== undefined && brand !== null)
-      )
+          .filter((brand) => brand !== undefined && brand !== null),
+      ),
     ),
   ];
 
@@ -120,37 +114,41 @@ const Shop = () => {
     setPriceFilter("");
     setSortBy("newest");
     setSearchQuery("");
-    dispatch(setChecked([])); // This will show all products again
+    dispatch(setChecked([]));
   };
 
   return (
     <>
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-8">
-          {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">
               Shop Products
             </h1>
             <p className="text-gray-600">
               Showing{" "}
-              <span className="font-bold text-blue-600">{products?.length}</span>{" "}
+              <span className="font-bold text-blue-600">
+                {products?.length}
+              </span>{" "}
               of products
               {checked.length > 0 && (
                 <span className="ml-2">
                   from{" "}
                   <span className="font-semibold">
-                    {checked.length} selected categor{checked.length === 1 ? "y" : "ies"}
+                    {checked.length} selected categor
+                    {checked.length === 1 ? "y" : "ies"}
                   </span>
                 </span>
               )}
             </p>
           </div>
 
-          {/* Search Bar */}
           <div className="mb-6">
             <div className="relative">
-              <FiSearch className="absolute left-3 top-3 text-gray-400" size={20} />
+              <FiSearch
+                className="absolute left-3 top-3 text-gray-400"
+                size={20}
+              />
               <input
                 type="text"
                 placeholder="Search products by name, brand, or description..."
@@ -161,7 +159,6 @@ const Shop = () => {
             </div>
           </div>
 
-          {/* Mobile Filter Button */}
           <div className="md:hidden mb-4 flex gap-2">
             <button
               onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
@@ -182,14 +179,12 @@ const Shop = () => {
           </div>
 
           <div className="flex gap-8">
-            {/* Sidebar Filters */}
             <div
               className={`${
                 isMobileFilterOpen ? "block" : "hidden"
               } md:block md:w-64 flex-shrink-0`}
             >
               <div className="bg-white rounded-lg shadow-md p-6 sticky top-20">
-                {/* Close Button Mobile */}
                 {isMobileFilterOpen && (
                   <button
                     onClick={() => setIsMobileFilterOpen(false)}
@@ -199,7 +194,6 @@ const Shop = () => {
                   </button>
                 )}
 
-                {/* Filter by Categories */}
                 <div className="mb-8">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 pb-3 border-b-2 border-blue-600">
                     Categories
@@ -242,7 +236,6 @@ const Shop = () => {
                     )}
                   </div>
 
-                  {/* Clear Category Filter */}
                   {checked.length > 0 && (
                     <button
                       onClick={() => dispatch(setChecked([]))}
@@ -253,7 +246,6 @@ const Shop = () => {
                   )}
                 </div>
 
-                {/* Filter by Brands */}
                 <div className="mb-8">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 pb-3 border-b-2 border-blue-600">
                     Brands
@@ -282,7 +274,6 @@ const Shop = () => {
                   </div>
                 </div>
 
-                {/* Filter by Price */}
                 <div className="mb-8">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 pb-3 border-b-2 border-blue-600">
                     Price Range
@@ -296,7 +287,6 @@ const Shop = () => {
                   />
                 </div>
 
-                {/* Reset Button */}
                 <button
                   onClick={handleReset}
                   className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 rounded-lg transition"
@@ -306,9 +296,7 @@ const Shop = () => {
               </div>
             </div>
 
-            {/* Products Section */}
             <div className="flex-1">
-              {/* Top Controls */}
               <div className="hidden md:flex justify-between items-center mb-6 pb-4 border-b">
                 <p className="text-gray-600">
                   Showing <span className="font-bold">{products?.length}</span>{" "}
@@ -325,13 +313,12 @@ const Shop = () => {
                 </select>
               </div>
 
-              {/* Products Grid */}
               {filteredProductsQuery.isLoading ? (
                 <div className="flex justify-center items-center h-96">
                   <Loader />
                 </div>
               ) : products && products.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {products.map((p) => (
                     <div key={p._id}>
                       <ProductCard p={p} />
