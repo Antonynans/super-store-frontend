@@ -1,51 +1,65 @@
-import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { FaStar, FaStarHalf } from "react-icons/fa";
 
-const Ratings = ({ value, text, color }) => {
-  const fullStars = Math.floor(value);
-  const halfStars = value - fullStars > 0.5 ? 1 : 0;
-  const emptyStar = 5 - fullStars - halfStars;
-
-  const colorMap = {
-    "yellow-500": "#eab308",
-    "pink-500": "#ec4899",
-    "blue-500": "#3b82f6",
-    "red-500": "#ef4444",
-    "green-500": "#22c55e",
-  };
-
-  const starColor = colorMap[color] || "#eab308";
-
+const Ratings = ({ value, text }) => {
   return (
-    <div className="flex items-center gap-0">
-      {[...Array(fullStars)].map((_, index) => (
-        <FaStar
-          key={`full-${index}`}
-          style={{ color: starColor }}
-          className="text-lg"
-        />
-      ))}
+    <div className="flex items-center gap-1">
+      <div className="flex gap-0.5">
+        {[...Array(5)].map((_, i) => {
+          const ratingValue = value;
+          if (i < Math.floor(ratingValue)) {
+            return <FaStar key={i} style={{ color: "#f59e0b" }} size={14} />;
+          } else if (i < ratingValue) {
+            return (
+              <div
+                key={i}
+                style={{
+                  position: "relative",
+                  display: "inline-block",
+                  width: "16px",
+                  height: "16px",
+                }}
+              >
+                <FaStar
+                  style={{
+                    position: "absolute",
+                    color: "#6b7280",
+                    left: 0,
+                    top: 0,
+                  }}
+                  size={14}
+                />
 
-      {halfStars === 1 && (
-        <FaStarHalfAlt style={{ color: starColor }} className="text-lg" />
-      )}
-
-      {[...Array(emptyStar)].map((_, index) => (
-        <FaRegStar
-          key={`empty-${index}`}
-          style={{ color: starColor }}
-          className="text-lg"
-        />
-      ))}
-
-      {text && (
-        <span className="ml-3 text-sm font-medium text-gray-700">{text}</span>
-      )}
+                <FaStar
+                  style={{
+                    position: "absolute",
+                    color: "#f59e0b",
+                    left: 0,
+                    top: 0,
+                    clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)",
+                  }}
+                  size={14}
+                />
+              </div>
+            );
+          } else {
+            return <FaStar key={i} style={{ color: "#6b7280" }} size={14} />;
+          }
+        })}
+      </div>
+      <div className="flex items-center gap-8">
+        <span className="text-gray-900 font-semibold text-sm">
+          {Math.round(value * 2) / 2}
+        </span>
+        {text && (
+          <span className="text-sm font-medium text-gray-600">{text}</span>
+        )}
+      </div>
     </div>
   );
 };
 
 Ratings.defaultProps = {
-  color: "yellow-500",
+  value: 0,
 };
 
 export default Ratings;
