@@ -3,23 +3,18 @@ import Loader from "../../components/Loader";
 import { Link } from "react-router-dom";
 import { useGetMyOrdersQuery } from "../../redux/api/orderApiSlice";
 import { FaClipboardList, FaCheckCircle, FaClock } from "react-icons/fa";
+import { useState } from "react";
 
 const UserOrder = () => {
   const { data: orders, isLoading, error } = useGetMyOrdersQuery();
+  const [displayCount, setDisplayCount] = useState(5);
+
+  const displayedOrders = orders?.slice(0, displayCount) || [];
+  const hasMore = orders && displayCount < orders.length;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <div className="flex items-center gap-3 mb-2">
-            <FaClipboardList className="text-blue-600 text-3xl" />
-            <h1 className="text-4xl font-bold text-gray-900">My Orders</h1>
-          </div>
-          <p className="text-gray-600">Track and manage all your orders</p>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="max-w-7xl mx-auto px-4 pb-12">
         {isLoading ? (
           <div className="flex justify-center items-center h-96">
             <Loader />
@@ -61,13 +56,13 @@ const UserOrder = () => {
             </div>
 
             <div className="space-y-4">
-              {orders.map((order) => (
+              {displayedOrders.map((order) => (
                 <div
                   key={order._id}
                   className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition duration-300"
                 >
                   <div className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                       <div className="md:col-span-1">
                         <img
                           src={order.orderItems[0]?.image}
@@ -95,14 +90,14 @@ const UserOrder = () => {
                         <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-2">
                           Total Amount
                         </h3>
-                        <p className="text-2xl font-bold text-blue-600 mb-4">
+                        <p className=" font-bold text-blue-600 mb-4">
                           ${parseFloat(order.totalPrice || 0).toFixed(2)}
                         </p>
 
                         <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-2">
                           Items
                         </h3>
-                        <p className="text-gray-900">
+                        <p className="text-blue-600">
                           {order.orderItems?.length || 0}{" "}
                           {order.orderItems?.length === 1 ? "item" : "items"}
                         </p>
@@ -161,19 +156,29 @@ const UserOrder = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
-
-                    <div className="border-t border-gray-200 pt-6">
-                      <Link to={`/order/${order._id}`}>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300">
-                          View Details
-                        </button>
-                      </Link>
+                      <div className="flex items-center">
+                        <Link to={`/order/${order._id}`}>
+                          <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300">
+                            View
+                          </button>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+
+            {hasMore && (
+              <div className="mt-8 flex justify-center">
+                <button
+                  onClick={() => setDisplayCount((prev) => prev + 5)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
+                >
+                  Load More Orders
+                </button>
+              </div>
+            )}
           </>
         )}
       </div>
