@@ -1,26 +1,82 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { FaTrash } from "react-icons/fa";
-import { addToCart, removeFromCart } from "../redux/features/cart/cartSlice";
+import {
+  useAddToCartMutation,
+  useRemoveFromCartMutation,
+  useGetCartQuery,
+} from "../redux/api/cartApiSlice";
+import { toast } from "react-toastify";
 
 const Cart = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.auth);
 
-  const cart = useSelector((state) => state.cart);
-  const { cartItems } = cart;
+  const { data: cart = {} } = useGetCartQuery(undefined, {
+    skip: !userInfo,
+  });
+  const cartItems = cart.cartItems || [];
 
-  const addToCartHandler = (product, qty) => {
-    dispatch(addToCart({ ...product, qty }));
+  
+  const [addToCart] = useAddToCartMutation();
+  const [removeFromCart] = useRemoveFromCartMutation();
+
+  const addToCartHandler = async (item, qty) => {
+    if (qty < 1) return;
+
+    try {
+      await addToCart({
+        product: item.product._id,
+        qty,
+      }).unwrap();
+      toast.success("Cart updated", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1000,
+      });
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to update cart", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
+    }
   };
 
-  const removeFromCartHandler = (id) => {
-    dispatch(removeFromCart(id));
+  const removeFromCartHandler = async (productId) => {
+    try {
+      await removeFromCart(productId).unwrap();
+      toast.success("Item removed from cart", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to remove from cart", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
+    }
   };
 
   const checkoutHandler = () => {
     navigate("/login?redirect=/shipping");
   };
+
+  if (!userInfo) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Please log in to view your cart
+          </h1>
+          <Link
+            to="/login"
+            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
+          >
+            Go to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -82,7 +138,7 @@ const Cart = () => {
                 <div className="divide-y divide-gray-200">
                   {cartItems.map((item) => (
                     <div
-                      key={item._id}
+                      key={item.product}
                       className="p-6 hover:bg-gray-50 transition duration-200"
                     >
                       <div className="flex gap-6">
@@ -96,7 +152,7 @@ const Cart = () => {
 
                         <div className="flex-1 min-w-0">
                           <Link
-                            to={`/product/${item._id}`}
+                            to={`/product/${item.product._id}`}
                             className="text-lg font-semibold text-blue-600 hover:text-blue-700 mb-1 block truncate"
                           >
                             {item.name}
@@ -110,53 +166,54 @@ const Cart = () => {
                         </div>
 
                         <div className="flex lg:flex-row flex-col lg:items-center items-end gap-4">
-                        
-
-   <div className="flex items-center border border-[#e5e7eb] rounded-[10px] overflow-hidden">
-                      <button
-                        onClick={(e) =>
-                              addToCartHandler(item, Number(Math.max(1, item.qty - 1)))
-                            }
-                        style={{
-                          padding: "10px 16px",
-                          border: "none",
-                          background: "#f9fafb",
-                          cursor: "pointer",
-                          fontSize: 18,
-                          fontWeight: 700,
-                        }}
-                      >
-                        −
-                      </button>
-                      <span
-                        style={{
-                          padding: "10px 20px",
-                          fontWeight: 700,
-                          fontSize: 16,
-                        }}
-                      >
-                        {item.qty}
-                      </span>
-                      <button
-                        onClick={(e) =>
-                              addToCartHandler(item, Number(item.qty + 1))
-                            }
-                        style={{
-                          padding: "10px 16px",
-                          border: "none",
-                          background: "#f9fafb",
-                          cursor: "pointer",
-                          fontSize: 18,
-                          fontWeight: 700,
-                        }}
-                      >
-                        +
-                      </button>
-                    </div>
+                          <div className="flex items-center border border-[#e5e7eb] rounded-[10px] overflow-hidden">
+                            <button
+                              onClick={(e) =>
+                                addToCartHandler(
+                                  item,
+                                  Number(Math.max(1, item.qty - 1)),
+                                )
+                              }
+                              style={{
+                                padding: "10px 16px",
+                                border: "none",
+                                background: "#f9fafb",
+                                cursor: "pointer",
+                                fontSize: 18,
+                                fontWeight: 700,
+                              }}
+                            >
+                              −
+                            </button>
+                            <span
+                              style={{
+                                padding: "10px 20px",
+                                fontWeight: 700,
+                                fontSize: 16,
+                              }}
+                            >
+                              {item.qty}
+                            </span>
+                            <button
+                              onClick={(e) =>
+                                addToCartHandler(item, Number(item.qty + 1))
+                              }
+                              style={{
+                                padding: "10px 16px",
+                                border: "none",
+                                background: "#f9fafb",
+                                cursor: "pointer",
+                                fontSize: 18,
+                                fontWeight: 700,
+                              }}
+                            >
+                              +
+                            </button>
+                          </div>
 
                           <button
                             className="text-red-600 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition duration-200"
-                            onClick={() => removeFromCartHandler(item._id)}
+                            onClick={() => removeFromCartHandler(item.product._id)}
                             title="Remove from cart"
                           >
                             <FaTrash className="text-lg" />
