@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {
   useGetProductDetailsQuery,
   useCreateReviewMutation,
 } from "../../redux/api/productApiSlice";
+import { useAddToCartMutation } from "../../redux/api/cartApiSlice";
 import Rating from "./Rating";
 import Loader from "../../components/Loader";
 import Message from "../../components/Message";
-import { addToCart } from "../../redux/features/cart/cartSlice";
 import {
   FaBox,
   FaClock,
@@ -23,7 +23,6 @@ import HeartIcon from "./HeartIcon";
 
 const Product = () => {
   const { id: productId } = useParams();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [qty, setQty] = useState(1);
@@ -42,9 +41,24 @@ const Product = () => {
   const [createReview, { isLoading: loadingProductReview }] =
     useCreateReviewMutation();
 
-  const addToCartHandler = () => {
-    dispatch(addToCart({ ...product, qty }));
-    navigate("/cart");
+  const [addToCart] = useAddToCartMutation();
+
+  const addToCartHandler = async () => {
+    if (!userInfo) {
+      toast.error("Please login to add items to cart");
+      return;
+    }
+
+    try {
+      await addToCart({
+        product: product._id,
+        qty,
+      }).unwrap();
+      toast.success("Product added to cart");
+      navigate("/cart");
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to add to cart");
+    }
   };
 
   const submitHandler = async (e) => {

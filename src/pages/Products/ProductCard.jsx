@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { AiOutlineShoppingCart } from "react-icons/ai";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../../redux/features/cart/cartSlice";
+import { useSelector } from "react-redux";
+import { useAddToCartMutation } from "../../redux/api/cartApiSlice";
 import { toast } from "react-toastify";
 import HeartIcon from "./HeartIcon";
 import Ratings from "./Ratings";
@@ -9,19 +9,37 @@ import { useState } from "react";
 
 const ProductCard = ({ p }) => {
   const [hovered, setHovered] = useState(false);
+  const [addToCart] = useAddToCartMutation();
+  const { userInfo } = useSelector((state) => state.auth);
 
-  const dispatch = useDispatch();
+  const addToCartHandler = async (product, qty) => {
+    if (!userInfo) {
+      toast.error("Please login to add items to cart", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
+      return;
+    }
 
-  const addToCartHandler = (product, qty) => {
-    dispatch(addToCart({ ...product, qty }));
-    toast.success("Item added successfully", {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 2000,
-    });
+    try {
+      await addToCart({
+        product: product._id,
+        qty,
+      }).unwrap();
+      toast.success("Item added successfully", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to add to cart", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
+    }
   };
 
   return (
-    <Link to={`/product/${p._id}`}>
+    <Link to={`/product/${p?._id}`}>
       <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
@@ -31,8 +49,8 @@ const ProductCard = ({ p }) => {
         <div className="relative overflow-hidden bg-gray-100 h-64">
           <img
             className="cursor-pointer w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-            src={p.image}
-            alt={p.name}
+            src={p?.image}
+            alt={p?.name}
           />
 
           <span className="absolute top-3 left-3 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
@@ -49,7 +67,7 @@ const ProductCard = ({ p }) => {
             {p?.name}
           </h3>
 
-          <Ratings value={p.rating} text={`${p.numReviews} reviews`} />
+          <Ratings value={p?.rating} text={`${p?.numReviews} reviews`} />
 
           <p className="text-sm text-gray-600 mb-3 line-clamp-2">
             {p?.description?.substring(0, 60)}...

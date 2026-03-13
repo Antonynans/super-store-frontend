@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {
   useGetProductDetailsQuery,
   useCreateReviewMutation,
 } from "../../redux/api/productApiSlice";
+import { useAddToCartMutation } from "../../redux/api/cartApiSlice";
 import Loader from "../../components/Loader";
 import {
   FaBox,
@@ -19,12 +20,10 @@ import moment from "moment";
 import HeartIcon from "./HeartIcon";
 import Ratings from "./Ratings";
 import ProductTabs from "./ProductTabs";
-import { addToCart } from "../../redux/features/cart/cartSlice";
 
 const ProductDetails = () => {
   const { id: productId } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const [qty, setQty] = useState(1);
   const [rating, setRating] = useState(0);
@@ -41,6 +40,8 @@ const ProductDetails = () => {
 
   const [createReview, { isLoading: loadingProductReview }] =
     useCreateReviewMutation();
+
+  const [addToCart] = useAddToCartMutation();
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -60,7 +61,15 @@ const ProductDetails = () => {
     }
   };
 
-  const addToCartHandler = () => {
+  const addToCartHandler = async () => {
+    if (!userInfo) {
+      toast.error("Please login to add items to cart", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
+      return;
+    }
+
     if (!product.countInStock || product.countInStock <= 0) {
       toast.error("Product is out of stock", {
         position: toast.POSITION.TOP_RIGHT,
@@ -69,11 +78,21 @@ const ProductDetails = () => {
       return;
     }
 
-    dispatch(addToCart({ ...product, qty }));
-    toast.success("Product added to cart", {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 2000,
-    });
+    try {
+      await addToCart({
+        product: product._id,
+        qty,
+      }).unwrap();
+      toast.success("Product added to cart", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
+    } catch (error) {
+      toast.error(error?.data?.message || "Failed to add to cart", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
+      });
+    }
   };
 
   return (
