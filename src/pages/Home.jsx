@@ -55,7 +55,6 @@ const Home = () => {
               </p>
             </div>
 
-            {/* Products Grid */}
             {data?.products && data.products.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {data.products.map((product) => (
@@ -66,9 +65,7 @@ const Home = () => {
               </div>
             ) : (
               <div className="text-center py-16">
-                <p className="text-xl text-gray-600 mb-6">
-                  No products found
-                </p>
+                <p className="text-xl text-gray-600 mb-6">No products found</p>
                 <Link
                   to="/shop"
                   className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
