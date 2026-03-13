@@ -1,12 +1,37 @@
-import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { selectFavoriteProduct } from "../../redux/features/favorites/favoriteSlice";
-import Product from "./Product";
+import { useSelector } from "react-redux";
 import { FaHeart, FaArrowLeft } from "react-icons/fa";
+import { useGetWishlistQuery } from "../../redux/api/wishlistApiSlice";
+import ProductCard from "./ProductCard";
 
 const Favorites = () => {
   const navigate = useNavigate();
-  const favorites = useSelector(selectFavoriteProduct);
+  const { userInfo } = useSelector((state) => state.auth);
+
+  const { data: wishlist = { products: [] } } = useGetWishlistQuery(undefined, {
+    skip: !userInfo,
+  });
+
+  if (!userInfo) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <FaHeart className="mx-auto h-24 w-24 text-gray-300 mb-6" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Please log in to view your favorites
+          </h1>
+          <Link
+            to="/login"
+            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
+          >
+            Go to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const products = wishlist?.products || [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -24,17 +49,17 @@ const Favorites = () => {
             <h1 className="text-4xl font-bold text-gray-900">My Favorites</h1>
           </div>
           <p className="text-gray-600">
-            {favorites.length === 0
+            {products.length === 0
               ? "Start adding products to your favorites"
-              : `You have ${favorites.length} favorite ${
-                  favorites.length === 1 ? "item" : "items"
+              : `You have ${products.length} favorite ${
+                  products.length === 1 ? "item" : "items"
                 }`}
           </p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-12">
-        {favorites.length === 0 ? (
+        {products.length === 0 ? (
           <div className="text-center py-16">
             <div className="mb-8">
               <FaHeart className="mx-auto h-24 w-24 text-gray-300" />
@@ -58,16 +83,16 @@ const Favorites = () => {
               <p className="text-gray-600">
                 Showing{" "}
                 <span className="font-bold text-blue-600">
-                  {favorites.length}
+                  {products.length}
                 </span>{" "}
-                favorite {favorites.length === 1 ? "product" : "products"}
+                favorite {products.length === 1 ? "product" : "products"}
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {favorites.map((product) => (
-                <div key={product._id}>
-                  <Product product={product} />
+              {products.map((product) => (
+                <div key={product._id} className="relative group">
+                  <ProductCard p={product} />
                 </div>
               ))}
             </div>

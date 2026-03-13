@@ -1,8 +1,14 @@
 import { useSelector } from "react-redux";
+import { useGetWishlistQuery } from "../../redux/api/wishlistApiSlice";
 
 const FavoritesCount = () => {
-  const favorites = useSelector((state) => state.favorites);
-  const favoriteCount = favorites.length;
+  const { userInfo } = useSelector((state) => state.auth);
+
+  const { data: wishlist } = useGetWishlistQuery(undefined, {
+    skip: !userInfo,
+  });
+
+  const favoriteCount = wishlist?.products.length;
 
   return (
     <div className="absolute left-1 top-0">

@@ -22,6 +22,7 @@ import {
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../../redux/api/usersApiSlice";
+import { useGetCartQuery } from "../../redux/api/cartApiSlice";
 import { logout } from "../../redux/features/auth/authSlice";
 import FavoritesCount from "../Products/FavoritesCount";
 
@@ -36,7 +37,9 @@ const adminMenuItems = [
 
 const Navigation = () => {
   const { userInfo } = useSelector((state) => state.auth);
-  const { cartItems } = useSelector((state) => state.cart);
+  const { data: cart = {} } = useGetCartQuery(undefined, {
+    skip: !userInfo,
+  });
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -73,6 +76,7 @@ const Navigation = () => {
     }
   };
 
+  const cartItems = cart.cartItems || [];
   const cartCount = cartItems.reduce((a, c) => a + c.qty, 0);
 
   const desktopLinkClass = ({ isActive }) =>

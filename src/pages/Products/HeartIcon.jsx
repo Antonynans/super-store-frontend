@@ -19,7 +19,7 @@ const HeartIcon = ({ product }) => {
   const dispatch = useDispatch();
   const { userInfo } = useSelector((state) => state.auth);
   const favorites = useSelector((state) => state.favorites) || [];
-  const isFavorite = favorites.some((p) => p._id === product._id);
+  const isFavorite = favorites.some((p) => p?._id === product?._id);
 
   const [addToWishlist, { isLoading: addingToWishlist }] =
     useAddToWishlistMutation();
@@ -49,14 +49,14 @@ const HeartIcon = ({ product }) => {
 
     try {
       if (isFavorite) {
-        await removeFromWishlist(product._id);
+        await removeFromWishlist(product?._id);
         dispatch(removeFromFavorites(product));
         toast.success("Item removed from wishlist", {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 2000,
         });
       } else {
-        await addToWishlist({ productId: product._id });
+        await addToWishlist({ productId: product?._id });
         dispatch(addToFavorites(product));
         toast.success("Item added to wishlist", {
           position: toast.POSITION.TOP_RIGHT,
