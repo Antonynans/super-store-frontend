@@ -24,7 +24,6 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
@@ -38,7 +37,6 @@ const Cart = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         {cartItems.length === 0 ? (
           <div className="text-center py-16">
@@ -72,7 +70,6 @@ const Cart = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Cart Items */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-gray-200">
@@ -89,7 +86,6 @@ const Cart = () => {
                       className="p-6 hover:bg-gray-50 transition duration-200"
                     >
                       <div className="flex gap-6">
-                        {/* Product Image */}
                         <div className="flex-shrink-0">
                           <img
                             src={item.image}
@@ -98,7 +94,6 @@ const Cart = () => {
                           />
                         </div>
 
-                        {/* Product Details */}
                         <div className="flex-1 min-w-0">
                           <Link
                             to={`/product/${item._id}`}
@@ -114,21 +109,50 @@ const Cart = () => {
                           </p>
                         </div>
 
-                        {/* Quantity & Remove */}
-                        <div className="flex flex-col items-end gap-4">
-                          <select
-                            className="px-3 py-2 border border-gray-300 rounded-lg text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={item.qty}
-                            onChange={(e) =>
-                              addToCartHandler(item, Number(e.target.value))
+                        <div className="flex lg:flex-row flex-col lg:items-center items-end gap-4">
+                        
+
+   <div className="flex items-center border border-[#e5e7eb] rounded-[10px] overflow-hidden">
+                      <button
+                        onClick={(e) =>
+                              addToCartHandler(item, Number(Math.max(1, item.qty - 1)))
                             }
-                          >
-                            {[...Array(item.countInStock).keys()].map((x) => (
-                              <option key={x + 1} value={x + 1}>
-                                {x + 1}
-                              </option>
-                            ))}
-                          </select>
+                        style={{
+                          padding: "10px 16px",
+                          border: "none",
+                          background: "#f9fafb",
+                          cursor: "pointer",
+                          fontSize: 18,
+                          fontWeight: 700,
+                        }}
+                      >
+                        −
+                      </button>
+                      <span
+                        style={{
+                          padding: "10px 20px",
+                          fontWeight: 700,
+                          fontSize: 16,
+                        }}
+                      >
+                        {item.qty}
+                      </span>
+                      <button
+                        onClick={(e) =>
+                              addToCartHandler(item, Number(item.qty + 1))
+                            }
+                        style={{
+                          padding: "10px 16px",
+                          border: "none",
+                          background: "#f9fafb",
+                          cursor: "pointer",
+                          fontSize: 18,
+                          fontWeight: 700,
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
 
                           <button
                             className="text-red-600 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition duration-200"
@@ -145,7 +169,6 @@ const Cart = () => {
               </div>
             </div>
 
-            {/* Order Summary */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
                 <h3 className="text-xl font-semibold text-gray-900 mb-6">

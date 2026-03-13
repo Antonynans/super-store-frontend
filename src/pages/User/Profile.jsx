@@ -8,7 +8,6 @@ import UserOrder from "./UserOrder";
 import Loader from "../../components/Loader";
 import Message from "../../components/Message";
 import { Link } from "react-router-dom";
-import { AiOutlineShoppingCart, AiOutlineClose } from "react-icons/ai";
 import { useAddToCartMutation } from "../../redux/api/cartApiSlice";
 import { useRemoveFromWishlistMutation } from "../../redux/api/wishlistApiSlice";
 import ProductCard from "../Products/ProductCard";
