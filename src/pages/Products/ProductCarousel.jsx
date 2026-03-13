@@ -6,6 +6,7 @@ import "slick-carousel/slick/slick-theme.css";
 import moment from "moment";
 import { FaBox, FaClock, FaStar, FaStore } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import Ratings from "./Ratings";
 
 const ProductCarousel = () => {
   const { data: products, isLoading, error } = useGetTopProductsQuery();
@@ -53,12 +54,8 @@ const ProductCarousel = () => {
 
                 <div className="bg-white p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Left - Product Info */}
                     <div className="space-y-4">
-                      <Link
-                        to={`/product/${_id}`}
-                        className="group"
-                      >
+                      <Link to={`/product/${_id}`} className="group">
                         <h2 className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition mb-2">
                           {name}
                         </h2>
@@ -80,20 +77,26 @@ const ProductCarousel = () => {
                       </Link>
                     </div>
 
-                    {/* Right - Product Details */}
                     <div className="grid grid-cols-2 gap-4">
-                      {/* Top Left */}
                       <div className="space-y-4">
                         <div className="flex items-start gap-3">
-                          <FaStore className="text-blue-600 mt-1 flex-shrink-0" size={18} />
+                          <FaStore
+                            className="text-blue-600 mt-1 flex-shrink-0"
+                            size={18}
+                          />
                           <div>
                             <p className="text-sm text-gray-600">Brand</p>
-                            <p className="font-semibold text-gray-900">{brand}</p>
+                            <p className="font-semibold text-gray-900">
+                              {brand}
+                            </p>
                           </div>
                         </div>
 
                         <div className="flex items-start gap-3">
-                          <FaClock className="text-blue-600 mt-1 flex-shrink-0" size={18} />
+                          <FaClock
+                            className="text-blue-600 mt-1 flex-shrink-0"
+                            size={18}
+                          />
                           <div>
                             <p className="text-sm text-gray-600">Added</p>
                             <p className="font-semibold text-gray-900">
@@ -103,20 +106,16 @@ const ProductCarousel = () => {
                         </div>
                       </div>
 
-                      {/* Top Right */}
                       <div className="space-y-4">
                         <div className="flex items-start gap-3">
-                          <FaStar className="text-yellow-400 mt-1 flex-shrink-0" size={18} />
-                          <div>
-                            <p className="text-sm text-gray-600">Rating</p>
-                            <p className="font-semibold text-gray-900">
-                              {Math.round(rating)}/5
-                            </p>
-                          </div>
+                          <Ratings value={rating} />
                         </div>
 
                         <div className="flex items-start gap-3">
-                          <FaBox className="text-green-600 mt-1 flex-shrink-0" size={18} />
+                          <FaBox
+                            className="text-green-600 mt-1 flex-shrink-0"
+                            size={18}
+                          />
                           <div>
                             <p className="text-sm text-gray-600">In Stock</p>
                             <p className="font-semibold text-gray-900">
@@ -126,10 +125,12 @@ const ProductCarousel = () => {
                         </div>
                       </div>
 
-                      {/* Bottom */}
                       <div className="col-span-2">
                         <div className="flex items-start gap-3 bg-blue-50 p-3 rounded-lg">
-                          <FaStar className="text-blue-600 mt-1 flex-shrink-0" size={18} />
+                          <FaStar
+                            className="text-blue-600 mt-1 flex-shrink-0"
+                            size={18}
+                          />
                           <div>
                             <p className="text-sm text-gray-600">Reviews</p>
                             <p className="font-semibold text-gray-900">
@@ -142,7 +143,7 @@ const ProductCarousel = () => {
                   </div>
                 </div>
               </div>
-            )
+            ),
           )}
         </Slider>
       )}
