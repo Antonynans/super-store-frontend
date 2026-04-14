@@ -7,6 +7,7 @@ import {
   useGetCartQuery,
 } from "../redux/api/cartApiSlice";
 import { toast } from "react-toastify";
+import getPrimaryImage from "../utils/getPrimaryImage";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -144,7 +145,7 @@ const Cart = () => {
                       <div className="flex gap-6">
                         <div className="flex-shrink-0">
                           <img
-                            src={item.image}
+                            src={getPrimaryImage(item.images)}
                             alt={item.name}
                             className="h-24 w-24 object-cover rounded-lg border border-gray-200"
                           />
@@ -168,7 +169,7 @@ const Cart = () => {
                         <div className="flex lg:flex-row flex-col lg:items-center items-end gap-4">
                           <div className="flex items-center border border-[#e5e7eb] rounded-[10px] overflow-hidden">
                             <button
-                              onClick={(e) =>
+                              onClick={() =>
                                 addToCartHandler(
                                   item,
                                   Number(Math.max(1, item.qty - 1)),
@@ -195,7 +196,7 @@ const Cart = () => {
                               {item.qty}
                             </span>
                             <button
-                              onClick={(e) =>
+                              onClick={() =>
                                 addToCartHandler(item, Number(item.qty + 1))
                               }
                               style={{

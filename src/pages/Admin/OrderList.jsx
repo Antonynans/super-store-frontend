@@ -3,6 +3,7 @@ import Loader from "../../components/Loader";
 import { Link } from "react-router-dom";
 import { useGetOrdersQuery } from "../../redux/api/orderApiSlice";
 import { useState, useMemo } from "react";
+import getPrimaryImage from "../../utils/getPrimaryImage";
 
 const OrderList = () => {
   const { data: orders, isLoading, error } = useGetOrdersQuery();
@@ -87,7 +88,7 @@ const OrderList = () => {
                       <td className="px-4 py-4">
                         {order.orderItems && order.orderItems[0] && (
                           <img
-                            src={order.orderItems[0].image}
+                            src={getPrimaryImage(order.orderItems[0].images)}
                             alt={order._id}
                             className="w-12 h-12 rounded object-cover"
                           />

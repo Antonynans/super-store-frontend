@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useGetMyOrdersQuery } from "../../redux/api/orderApiSlice";
 import { FaClipboardList, FaCheckCircle, FaClock } from "react-icons/fa";
 import { useState } from "react";
+import getPrimaryImage from "../../utils/getPrimaryImage";
 
 const UserOrder = () => {
   const { data: orders, isLoading, error } = useGetMyOrdersQuery();
@@ -65,7 +66,7 @@ const UserOrder = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                       <div className="md:col-span-1">
                         <img
-                          src={order.orderItems[0]?.image}
+                          src={getPrimaryImage(order.orderItems[0]?.images)}
                           alt="Order item"
                           className="w-full h-32 object-cover rounded-lg border border-gray-200"
                         />

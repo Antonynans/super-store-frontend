@@ -7,6 +7,7 @@ import ProgressSteps from "../../components/ProgressSteps";
 import { useCreateOrderMutation } from "../../redux/api/orderApiSlice";
 import { clearCartItems } from "../../redux/features/cart/cartSlice";
 import { FaClipboardList } from "react-icons/fa";
+import getPrimaryImage from "../../utils/getPrimaryImage";
 
 const PlaceOrder = () => {
   const navigate = useNavigate();
@@ -89,7 +90,7 @@ const PlaceOrder = () => {
                       <div className="flex gap-6">
                         <div className="flex-shrink-0">
                           <img
-                            src={item.image}
+                            src={getPrimaryImage(item.images)}
                             alt={item.name}
                             className="h-24 w-24 object-cover rounded-lg border border-gray-200"
                           />

@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
 import HeartIcon from "./HeartIcon";
+import getPrimaryImage from "../../utils/getPrimaryImage";
 
 const Product = ({ product }) => {
   return (
     <div className="w-full p-3 relative">
       <div className="relative overflow-hidden rounded-lg">
         <img
-          src={product.image}
+          src={getPrimaryImage(product.images)}
           alt={product.name}
           className="w-full h-64 object-cover rounded-lg hover:scale-105 transition-transform duration-300"
         />

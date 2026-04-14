@@ -3,6 +3,7 @@ import moment from "moment";
 import { useState, useMemo } from "react";
 import { useAllProductsQuery } from "../../redux/api/productApiSlice";
 import Loader from "../../components/Loader";
+import getPrimaryImage from "../../utils/getPrimaryImage";
 
 const AllProducts = () => {
   const { data: products, isLoading, isError } = useAllProductsQuery();
@@ -103,7 +104,7 @@ const AllProducts = () => {
                       >
                         <td className="px-6 py-4">
                           <img
-                            src={product.image}
+                            src={getPrimaryImage(product.images)}
                             alt={product.name}
                             className="w-16 h-16 rounded-lg object-cover"
                           />
