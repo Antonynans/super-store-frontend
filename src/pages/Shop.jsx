@@ -10,6 +10,8 @@ import {
 } from "../redux/features/shop/shopSlice";
 import Loader from "../components/Loader";
 import ProductCard from "./Products/ProductCard";
+import Select from "react-select";
+import { useDebounce } from "../hook/useDebounce";
 
 const Shop = () => {
   const dispatch = useDispatch();
@@ -18,7 +20,10 @@ const Shop = () => {
   );
 
   const categoriesQuery = useFetchCategoriesQuery();
-  const [priceFilter, setPriceFilter] = useState("");
+  const [priceRange, setPriceRange] = useState({
+    min: 0,
+    max: 100000,
+  });
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,6 +32,11 @@ const Shop = () => {
     checked: checked.length > 0 ? checked : [],
     radio,
   });
+
+  const prices = filteredProductsQuery.data?.map((p) => p.price) || [];
+  const maxPrice = prices.length > 0 ? Math.max(...prices) : 100000;
+
+  const debouncedSearch = useDebounce(searchQuery, 400);
 
   useEffect(() => {
     if (!categoriesQuery.isLoading && categoriesQuery.data) {
@@ -38,23 +48,20 @@ const Shop = () => {
     if (!filteredProductsQuery.isLoading && filteredProductsQuery.data) {
       let filtered = [...(filteredProductsQuery.data || [])];
 
-      if (priceFilter) {
-        filtered = filtered.filter((product) => {
-          return (
-            product.price.toString().includes(priceFilter) ||
-            product.price === parseInt(priceFilter, 10)
-          );
-        });
-      }
+      filtered = filtered.filter(
+        (product) =>
+          product.price >= Number(priceRange.min) &&
+          product.price <= Number(priceRange.max),
+      );
 
-      if (searchQuery) {
+      if (debouncedSearch) {
+        const query = debouncedSearch.toLowerCase();
+
         filtered = filtered.filter((product) => {
           return (
-            product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            product.description
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            product.brand.toLowerCase().includes(searchQuery.toLowerCase())
+            product.name?.toLowerCase().includes(query) ||
+            product.description?.toLowerCase().includes(query) ||
+            product.brand?.toLowerCase().includes(query)
           );
         });
       }
@@ -77,17 +84,10 @@ const Shop = () => {
     filteredProductsQuery.data,
     filteredProductsQuery.isLoading,
     dispatch,
-    priceFilter,
+    priceRange,
     sortBy,
-    searchQuery,
+    debouncedSearch,
   ]);
-
-  const handleBrandClick = (brand) => {
-    const productsByBrand = filteredProductsQuery.data?.filter(
-      (product) => product.brand === brand,
-    );
-    dispatch(setProducts(productsByBrand || []));
-  };
 
   const handleCheck = (value, id) => {
     const updatedChecked = value
@@ -96,25 +96,35 @@ const Shop = () => {
     dispatch(setChecked(updatedChecked));
   };
 
-  const uniqueBrands = [
-    ...Array.from(
-      new Set(
-        filteredProductsQuery.data
-          ?.map((product) => product.brand)
-          .filter((brand) => brand !== undefined && brand !== null),
-      ),
-    ),
-  ];
-
   const handlePriceChange = (e) => {
-    setPriceFilter(e.target.value);
+    const { name, value } = e.target;
+    setPriceRange((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleReset = () => {
-    setPriceFilter("");
+    setPriceRange({ min: 0, max: 100000 });
     setSortBy("newest");
     setSearchQuery("");
     dispatch(setChecked([]));
+  };
+
+  const sortOptions = [
+    { value: "newest", label: "Newest" },
+    { value: "price-low", label: "Price: Low to High" },
+    { value: "price-high", label: "Price: High to Low" },
+  ];
+
+  const customStyles = {
+    control: (base) => ({
+      ...base,
+      borderRadius: "0.5rem",
+      borderColor: "#d1d5db",
+      boxShadow: "none",
+      "&:hover": { borderColor: "#2563eb" },
+    }),
   };
 
   return (
@@ -167,15 +177,15 @@ const Shop = () => {
               <FiSliders size={20} />
               Filters
             </button>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white text-gray-900"
-            >
-              <option value="newest">Newest</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-            </select>
+
+            <Select
+              styles={customStyles}
+              options={sortOptions}
+              value={sortOptions.find((opt) => opt.value === sortBy)}
+              onChange={(selected) => setSortBy(selected.value)}
+              className="flex-1 z-20"
+              classNamePrefix="react-select"
+            />
           </div>
 
           <div className="flex gap-8">
@@ -248,43 +258,54 @@ const Shop = () => {
 
                 <div className="mb-8">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 pb-3 border-b-2 border-blue-600">
-                    Brands
-                  </h3>
-                  <div className="space-y-3">
-                    {uniqueBrands && uniqueBrands.length > 0 ? (
-                      uniqueBrands.map((brand) => (
-                        <label
-                          key={brand}
-                          className="flex items-center gap-3 cursor-pointer hover:text-blue-600 transition"
-                        >
-                          <input
-                            type="radio"
-                            name="brand"
-                            onChange={() => handleBrandClick(brand)}
-                            className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-600 cursor-pointer"
-                          />
-                          <span className="text-gray-700 font-medium">
-                            {brand}
-                          </span>
-                        </label>
-                      ))
-                    ) : (
-                      <p className="text-gray-500 text-sm">No brands found</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="mb-8">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 pb-3 border-b-2 border-blue-600">
                     Price Range
                   </h3>
-                  <input
-                    type="text"
-                    placeholder="Enter price (e.g., 50)"
-                    value={priceFilter}
-                    onChange={handlePriceChange}
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900"
-                  />
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1">
+                      <label className="text-xs text-gray-500 mb-1 block">
+                        Min ($)
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max={priceRange.max}
+                        value={priceRange.min}
+                        onChange={(e) =>
+                          setPriceRange((prev) => ({
+                            ...prev,
+                            min: Math.max(
+                              0,
+                              Math.min(Number(e.target.value), prev.max - 1),
+                            ),
+                          }))
+                        }
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900"
+                      />
+                    </div>
+                    <span className="text-gray-400 mt-5">—</span>
+                    <div className="flex-1">
+                      <label className="text-xs text-gray-500 mb-1 block">
+                        Max ($)
+                      </label>
+                      <input
+                        type="number"
+                        min={priceRange.min}
+                        max={maxPrice}
+                        value={priceRange.max}
+                        onChange={(e) =>
+                          setPriceRange((prev) => ({
+                            ...prev,
+                            max: Math.max(Number(e.target.value), prev.min + 1),
+                          }))
+                        }
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-400 mt-2">
+                    <span>Min: $0</span>
+                    <span>Max: ${Number(maxPrice).toLocaleString()}</span>
+                  </div>
                 </div>
 
                 <button
@@ -302,15 +323,15 @@ const Shop = () => {
                   Showing <span className="font-bold">{products?.length}</span>{" "}
                   products
                 </p>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white text-gray-900"
-                >
-                  <option value="newest">Newest</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                </select>
+
+                <Select
+                  styles={customStyles}
+                  options={sortOptions}
+                  value={sortOptions.find((opt) => opt.value === sortBy)}
+                  onChange={(selected) => setSortBy(selected.value)}
+                  className="w-60 z-20"
+                  classNamePrefix="react-select"
+                />
               </div>
 
               {filteredProductsQuery.isLoading ? (
