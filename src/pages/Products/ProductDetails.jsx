@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -10,7 +10,6 @@ import { useAddToCartMutation } from "../../redux/api/cartApiSlice";
 import Loader from "../../components/Loader";
 import {
   FaBox,
-  FaClock,
   FaShoppingCart,
   FaStore,
   FaArrowLeft,
@@ -28,6 +27,7 @@ const ProductDetails = () => {
   const [qty, setQty] = useState(1);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [selectedImage, setSelectedImage] = useState("");
 
   const {
     data: product,
@@ -42,6 +42,12 @@ const ProductDetails = () => {
     useCreateReviewMutation();
 
   const [addToCart] = useAddToCartMutation();
+  const productImages = product?.images || [];
+  const activeImage = selectedImage || productImages[0] || "";
+
+  useEffect(() => {
+    setSelectedImage("");
+  }, [productId]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -188,11 +194,34 @@ const ProductDetails = () => {
             <div className="flex flex-col">
               <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6 relative group">
                 <img
-                  src={product.image}
+                  src={activeImage}
                   alt={product.name}
                   className="w-full h-96 lg:h-full object-cover"
                 />
               </div>
+
+             {productImages.length > 1 && (
+  <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+    {productImages.map((image) => (
+      <button
+        key={image}
+        type="button"
+        onClick={() => setSelectedImage(image)}
+        className={`min-w-[90px] flex-shrink-0 snap-start overflow-hidden rounded-lg border-2 bg-white ${
+          activeImage === image
+            ? "border-blue-600"
+            : "border-transparent"
+        }`}
+      >
+        <img
+          src={image}
+          alt={product.name}
+          className="h-24 w-full object-cover"
+        />
+      </button>
+    ))}
+  </div>
+)}
             </div>
 
             <div className="bg-white rounded-lg shadow-lg p-8 flex flex-col justify-between">
