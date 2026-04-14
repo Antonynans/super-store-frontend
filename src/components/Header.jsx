@@ -65,23 +65,26 @@ const Header = () => {
       <div className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="mb-12">
-          <div className="flex items-center gap-2 justify-center">
+            <div className="flex items-center gap-2 justify-center">
               <div className=" bg-yellow-400 text-yellow-900 rounded-full p-3 shadow-lg border-2 border-white">
-                    <FaStar size={20} className="fill-yellow-900" />
-                  </div>  
-            <h2 className="text-4xl font-bold text-center text-gray-900">
-             Top Rated This Month
-            </h2>
-          </div>
+                <FaStar size={20} className="fill-yellow-900" />
+              </div>
+              <h2 className="text-4xl font-bold text-center text-gray-900">
+                Top Rated This Month
+              </h2>
+            </div>
           </div>
 
           {data && data.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-4">
               {data.slice(0, 8).map((product) => (
-                <div key={product._id} className="group relative">
-                  <ProductCard p={product} />
-
-                 
+                <div
+                  key={product._id}
+                  className="min-w-[250px] sm:min-w-[280px] md:min-w-[300px] flex-shrink-0 snap-start"
+                >
+                  <div className="group relative">
+                    <ProductCard p={product} />
+                  </div>
                 </div>
               ))}
             </div>
