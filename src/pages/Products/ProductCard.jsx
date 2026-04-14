@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import HeartIcon from "./HeartIcon";
 import Ratings from "./Ratings";
 import { useState } from "react";
+import getPrimaryImage from "../../utils/getPrimaryImage";
 
 const ProductCard = ({ p }) => {
   const [hovered, setHovered] = useState(false);
@@ -46,16 +47,16 @@ const ProductCard = ({ p }) => {
         className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl  cursor-pointer h-full flex flex-col"
         style={{ transform: hovered ? "translateY(-4px)" : "none" }}
       >
-        <div className="relative overflow-hidden bg-gray-100 h-64">
+        <div className="relative overflow-hidden bg-gray-100 min-w-[250px] sm:min-w-[280px] md:min-w-[300px]  h-48">
           <img
             className="cursor-pointer w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-            src={p?.image}
+            src={getPrimaryImage(p?.images)}
             alt={p?.name}
           />
 
-          <span className="absolute top-3 left-3 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+          {/* <span className="absolute top-3 left-3 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
             {p?.brand || "No Brand"}
-          </span>
+          </span> */}
 
           <div className="absolute top-3 right-8">
             <HeartIcon product={p} />
@@ -63,17 +64,17 @@ const ProductCard = ({ p }) => {
         </div>
 
         <div className="p-4 flex-1 flex flex-col justify-between">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition">
+          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition">
             {p?.name}
           </h3>
 
           <Ratings value={p?.rating} text={`${p?.numReviews} reviews`} />
 
-          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+          {/* <p className="text-sm text-gray-600 mb-3 line-clamp-2">
             {p?.description?.substring(0, 60)}...
-          </p>
+          </p> */}
 
-          <div className="mb-4">
+          <div className="">
             {p?.countInStock > 0 ? (
               <span className="text-xs text-green-600 font-semibold">
                 ✓ In Stock
@@ -87,7 +88,7 @@ const ProductCard = ({ p }) => {
 
           <div className="flex items-center justify-between">
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-gray-900">
+              <span className="text-xl font-bold text-gray-900">
                 {p?.price?.toLocaleString("en-US", {
                   style: "currency",
                   currency: "USD",
@@ -110,7 +111,7 @@ const ProductCard = ({ p }) => {
                 }`}
               >
                 <AiOutlineShoppingCart size={18} />
-                {p?.countInStock === 0 ? "Out of Stock" : "Add to Cart"}
+                {/* {p?.countInStock === 0 ? "Out of Stock" : "Add to Cart"} */}
               </button>
             </div>
           </div>
