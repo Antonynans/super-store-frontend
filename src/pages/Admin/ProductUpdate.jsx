@@ -28,10 +28,10 @@ const AdminProductUpdate = () => {
     category: "",
     brand: "",
     countInStock: "",
-    image: "",
+    images: [],
   });
 
-  const [imagePreview, setImagePreview] = useState("");
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   useEffect(() => {
     if (productData && productData._id) {
@@ -42,34 +42,35 @@ const AdminProductUpdate = () => {
         category: productData.category?._id || "",
         brand: productData.brand,
         countInStock: productData.countInStock,
-        image: productData.image,
+        images: productData.images || [],
       });
-      setImagePreview(productData.image);
+      setImagePreviews(productData.images || []);
     }
   }, [productData]);
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-    };
-    reader.readAsDataURL(file);
+    setImagePreviews(files.map((file) => URL.createObjectURL(file)));
 
     try {
-      const uploadFormData = new FormData();
-      uploadFormData.append("image", file);
+      const uploadedImages = [];
 
-      const uploadRes = await uploadProductImage(uploadFormData).unwrap();
+      for (const file of files) {
+        const uploadFormData = new FormData();
+        uploadFormData.append("file", file);
+
+        const uploadRes = await uploadProductImage(uploadFormData).unwrap();
+        uploadedImages.push(uploadRes.url);
+      }
 
       setFormData((prev) => ({
         ...prev,
-        image: uploadRes.image,
+        images: uploadedImages,
       }));
 
-      toast.success("Image uploaded successfully!", {
+      toast.success("Images uploaded successfully!", {
         position: "top-right",
         autoClose: 2000,
       });
@@ -93,8 +94,8 @@ const AdminProductUpdate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.image) {
-      toast.error("Please upload an image", {
+    if (formData.images.length === 0) {
+      toast.error("Please upload at least one image", {
         position: "top-right",
         autoClose: 2000,
       });
@@ -102,7 +103,7 @@ const AdminProductUpdate = () => {
     }
 
     try {
-      const result = await updateProduct({
+      await updateProduct({
         productId: params._id,
         ...formData,
       }).unwrap();
@@ -158,14 +159,17 @@ const AdminProductUpdate = () => {
               <p className="text-gray-600">Edit or delete product details</p>
             </div>
 
-            {imagePreview && (
+            {imagePreviews.length > 0 && (
               <div className="mb-8 text-center">
-                <div className="flex justify-center">
-                  <img
-                    src={imagePreview}
-                    alt="product preview"
-                    className="max-h-[300px] rounded-xl shadow-lg"
-                  />
+                <div className="flex flex-wrap justify-center gap-4">
+                  {imagePreviews.map((preview, index) => (
+                    <img
+                      key={`${preview}-${index}`}
+                      src={preview}
+                      alt={`product preview ${index + 1}`}
+                      className="h-32 w-32 rounded-xl object-cover shadow-lg"
+                    />
+                  ))}
                 </div>
               </div>
             )}
@@ -187,7 +191,7 @@ const AdminProductUpdate = () => {
                     />
                   </svg>
                   <span className="text-gray-900 font-bold text-lg">
-                    {uploading ? "Uploading..." : "Upload Product Image"}
+                    {uploading ? "Uploading..." : "Upload Product Images"}
                   </span>
                   <span className="text-gray-600 text-sm mt-1">
                     PNG, JPG up to 5MB
@@ -195,10 +199,11 @@ const AdminProductUpdate = () => {
                 </div>
                 <input
                   type="file"
-                  name="image"
+                  name="images"
                   accept="image/*"
                   onChange={handleImageUpload}
                   disabled={uploading}
+                  multiple
                   className="hidden"
                 />
               </label>

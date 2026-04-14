@@ -13,10 +13,10 @@ const ProductList = () => {
     category: "",
     brand: "",
     countInStock: "",
-    image: "", 
+    images: [],
   });
 
-  const [imagePreview, setImagePreview] = useState("");
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
 
@@ -25,29 +25,29 @@ const ProductList = () => {
   const { data: categories = [] } = useFetchCategoriesQuery();
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-    };
-    reader.readAsDataURL(file);
+    setImagePreviews(files.map((file) => URL.createObjectURL(file)));
 
     try {
       setUploading(true);
+      const uploadedImages = [];
 
-      const uploadFormData = new FormData();
-      uploadFormData.append("image", file);
+      for (const file of files) {
+        const uploadFormData = new FormData();
+        uploadFormData.append("file", file);
 
-      const res = await uploadProductImage(uploadFormData).unwrap();
+        const res = await uploadProductImage(uploadFormData).unwrap();
+        uploadedImages.push(res.url);
+      }
 
       setFormData((prev) => ({
         ...prev,
-        image: res.image, 
+        images: uploadedImages,
       }));
 
-      toast.success("Image uploaded successfully!", {
+      toast.success("Images uploaded successfully!", {
         position: "top-right",
         autoClose: 2000,
       });
@@ -77,9 +77,9 @@ const ProductList = () => {
       !formData.name ||
       !formData.price ||
       !formData.category ||
-      !formData.image
+      formData.images.length === 0
     ) {
-      toast.error("Please fill all required fields and upload an image", {
+      toast.error("Please fill all required fields and upload at least one image", {
         position: "top-right",
         autoClose: 2000,
       });
@@ -101,9 +101,9 @@ const ProductList = () => {
         category: "",
         brand: "",
         countInStock: "",
-        image: "",
+        images: [],
       });
-      setImagePreview("");
+      setImagePreviews([]);
 
       navigate("/admin/allproductslist");
     } catch (error) {
@@ -127,14 +127,17 @@ const ProductList = () => {
           </div>
 
           <div className="bg-white rounded-2xl shadow-md p-8">
-            {imagePreview && (
+            {imagePreviews.length > 0 && (
               <div className="mb-8 text-center">
-                <div className="flex justify-center">
-                  <img
-                    src={imagePreview}
-                    alt="product preview"
-                    className="max-h-[300px] rounded-xl shadow-lg"
-                  />
+                <div className="flex flex-wrap justify-center gap-4">
+                  {imagePreviews.map((preview, index) => (
+                    <img
+                      key={`${preview}-${index}`}
+                      src={preview}
+                      alt={`product preview ${index + 1}`}
+                      className="h-32 w-32 rounded-xl object-cover shadow-lg"
+                    />
+                  ))}
                 </div>
               </div>
             )}
@@ -156,7 +159,7 @@ const ProductList = () => {
                     />
                   </svg>
                   <span className="text-gray-900 font-bold text-lg">
-                    {uploading ? "Uploading..." : "Upload Product Image"}
+                    {uploading ? "Uploading..." : "Upload Product Images"}
                   </span>
                   <span className="text-gray-600 text-sm mt-1">
                     PNG, JPG up to 5MB
@@ -164,10 +167,11 @@ const ProductList = () => {
                 </div>
                 <input
                   type="file"
-                  name="image"
+                  name="images"
                   accept="image/*"
                   onChange={handleImageUpload}
                   disabled={uploading}
+                  multiple
                   className="hidden"
                 />
               </label>
