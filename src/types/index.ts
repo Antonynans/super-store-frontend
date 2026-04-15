@@ -49,7 +49,12 @@ export interface ProductsResponse {
 }
 
 export interface CartItem {
-  product: string;
+  product: {
+    _id: string;
+    name: string;
+    images: string[];
+    price: number;
+  };
   name: string;
   images: string[];
   price: number;
@@ -95,7 +100,11 @@ export interface OrderItem {
 
 export interface Order {
   _id: string;
-  user: string;
+  user: {
+    _id: string;
+    username: string;
+    email: string;
+  };
   orderItems: OrderItem[];
   shippingAddress: {
     address: string;

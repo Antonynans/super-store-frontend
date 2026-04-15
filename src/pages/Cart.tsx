@@ -5,21 +5,6 @@ import { useAddToCartHandler } from "../hook/useAddToCartHandler";
 import { useRemoveFromCartHandler } from "../hook/useRemoveFromCartHandler";
 import { useGetCartQuery } from "../redux/api/cartApiSlice";
 import getPrimaryImage from "../Utils/getPrimaryImage";
-// import { CartItem } from "../types";
-
-interface CartItem {
-  _id: string;
-  product: {
-    _id: string;
-    name: string;
-    images: string[];
-    price: number;
-  };
-  name: string;
-  images: string[];
-  price: number;
-  qty: number;
-}
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -29,7 +14,7 @@ const Cart = () => {
     skip: !userInfo,
   });
 
-  const cartItems: CartItem[] = cart?.cartItems || [];
+  const cartItems = cart?.cartItems || [];
 
   const addToCartHandler = useAddToCartHandler();
   const removeFromCartHandler = useRemoveFromCartHandler();
@@ -114,7 +99,7 @@ const Cart = () => {
                 </div>
 
                 <div className="divide-y divide-border">
-                  {cartItems.map((item: CartItem) => (
+                  {cartItems.map((item) => (
                     <div
                       key={item._id}
                       className="p-6 hover:bg-surface-muted transition duration-200"
@@ -219,14 +204,21 @@ const Cart = () => {
                     <span className="font-medium">
                       $
                       {cartItems
-                        .reduce((acc, item) => acc + item.qty * item.price, 0)
+                        .reduce(
+                          (acc: number, item: { qty: number; price: number }) =>
+                            acc + item.qty * item.price,
+                          0,
+                        )
                         .toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between text-text-secondary">
                     <span>Items</span>
                     <span className="font-medium">
-                      {cartItems.reduce((acc, item) => acc + item.qty, 0)}
+                      {cartItems.reduce(
+                        (acc: number, item: { qty: number }) => acc + item.qty,
+                        0,
+                      )}
                     </span>
                   </div>
                   <div className="border-t border-border pt-4 flex justify-between">
@@ -236,7 +228,11 @@ const Cart = () => {
                     <span className="text-2xl font-bold text-blue-600">
                       $
                       {cartItems
-                        .reduce((acc, item) => acc + item.qty * item.price, 0)
+                        .reduce(
+                          (acc: number, item: { qty: number; price: number }) =>
+                            acc + item.qty * item.price,
+                          0,
+                        )
                         .toFixed(2)}
                     </span>
                   </div>

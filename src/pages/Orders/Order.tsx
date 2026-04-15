@@ -26,6 +26,7 @@ const Order = () => {
     skip: !orderId,
   });
 
+  
   const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
   const [deliverOrder, { isLoading: loadingDeliver }] =
     useDeliverOrderMutation();
@@ -35,41 +36,38 @@ const Order = () => {
 
   const {
     data: paypal,
-    isLoading: loadingPaPal,
+    isLoading: loadingPayPal,
     error: errorPayPal,
   } = useGetPaypalClientIdQuery();
 
-  useEffect(() => {
-    if (!errorPayPal && !loadingPaPal && paypal?.clientId) {
-      const loadingPaPalScript = async () => {
-        paypalDispatch({
-          type: "setOptions",
-          value: {
-            "client-id": paypal.clientId,
-            currency: "USD",
-          },
-        });
-        paypalDispatch({ type: "setLoadingStatus", value: "pending" });
-      };
+ const isPayPalReady = paypal?.clientId && order && !order.isPaid;
 
-      if (order && !order.isPaid) {
-        loadingPaPalScript();
-      }
-    }
-  }, [errorPayPal, loadingPaPal, order, paypal, paypalDispatch]);
+// useEffect(() => {
+//   if (!isPayPalReady || errorPayPal || loadingPayPal) return;
 
-  const onApprove = async (data: any, actions: any) => {
-    const details = await actions.order.capture();
+//   paypalDispatch({
+//     type: "setOptions",
+//     value: {
+//       "client-id": paypal.clientId,
+//       currency: "USD",
+//     },
+//   });
 
-    try {
-      await payOrder({ orderId, details }).unwrap();
-      refetch();
-      toast.success("Order is paid");
-    } catch (error: unknown) {
-      const err = error as { data?: { message?: string }; message?: string };
-      toast.error(err?.data?.message || err?.message);
-    }
-  };
+//   paypalDispatch({ type: "setLoadingStatus", value: "pending" });
+// }, [isPayPalReady, errorPayPal, loadingPayPal, paypalDispatch]);
+
+  // const onApprove = async (data: any, actions: any) => {
+  //   const details = await actions.order.capture();
+
+  //   try {
+  //     await payOrder({ orderId, details }).unwrap();
+  //     refetch();
+  //     toast.success("Order is paid");
+  //   } catch (error: unknown) {
+  //     const err = error as { data?: { message?: string }; message?: string };
+  //     toast.error(err?.data?.message || err?.message);
+  //   }
+  // };
 
   const createOrder = (data: any, actions: any) => {
     return actions.order.create({
@@ -233,7 +231,7 @@ const Order = () => {
         {!order?.isPaid && (
           <div className="mt-4">
             {loadingPay && <Loader />}
-            {loadingPaPal ? (
+            {loadingPayPal ? (
               <Loader />
             ) : errorPayPal ? (
               <Message variant="danger">
@@ -246,7 +244,7 @@ const Order = () => {
                 <h3 className="text-lg font-semibold mb-4">Payment</h3>
                 <PayPalButtons
                   createOrder={createOrder}
-                  onApprove={onApprove}
+                  // onApprove={onApprove}
                   onError={onError}
                 ></PayPalButtons>
               </div>

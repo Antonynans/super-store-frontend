@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useGetOrdersQuery } from "../../redux/api/orderApiSlice";
 import { useState, useMemo, SetStateAction } from "react";
 import getPrimaryImage from "../../Utils/getPrimaryImage";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 const OrderList = () => {
   const { data: orders, isLoading, error } = useGetOrdersQuery();
@@ -104,7 +105,7 @@ const OrderList = () => {
 
                       <td className="px-4 py-4">
                         <span className="text-sm text-gray-700">
-                          {order.user}
+                          {order?.user?.username}
                         </span>
                       </td>
 
@@ -194,9 +195,9 @@ const OrderList = () => {
                 <button
                   onClick={handlePreviousPage}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 bg-gray-300 hover:bg-gray-400 disabled:bg-border disabled:text-gray-400 text-gray-900 rounded-lg font-semibold transition-colors"
+                  className="w-10 h-10 flex items-center justify-center bg-gray-300 hover:bg-gray-400 disabled:bg-border disabled:text-gray-400 text-gray-900 rounded-lg font-semibold transition-colors"
                 >
-                  ← Previous
+                  <IoIosArrowBack /> 
                 </button>
 
                 <div className="flex gap-1">
@@ -220,9 +221,9 @@ const OrderList = () => {
                 <button
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 bg-gray-300 hover:bg-gray-400 disabled:bg-border disabled:text-gray-400 text-gray-900 rounded-lg font-semibold transition-colors"
+                  className="w-10 h-10 flex items-center justify-center bg-gray-300 hover:bg-gray-400 disabled:bg-border disabled:text-gray-400 text-gray-900 rounded-lg font-semibold transition-colors"
                 >
-                  Next →
+                   <IoIosArrowForward />
                 </button>
               </div>
             </div>
