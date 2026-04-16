@@ -55,7 +55,7 @@ const HeartIcon = ({ product }: { product: Product }) => {
       if (isFavorite) {
         await removeFromWishlist(product?._id);
         dispatch(removeFromFavorites(product));
-        toast.success("Item removed from wishlist", {
+        toast.warning("Item removed from wishlist", {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 2000,
         });

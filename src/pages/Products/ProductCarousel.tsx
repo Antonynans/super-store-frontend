@@ -9,8 +9,8 @@ import { Link } from "react-router-dom";
 import Ratings from "./Ratings";
 import { useState } from "react";
 import CarouselSkeleton from "../../components/skeletons/CaroselSkeleton";
-import BlurImage from "../../components/BlurImage";
 import getPrimaryImage from "../../Utils/getPrimaryImage";
+import ProductImage from "../../components/ProductImage";
 
 const ProductCarousel = () => {
   const { data: products, isLoading, error } = useGetTopProductsQuery();
@@ -59,10 +59,10 @@ const ProductCarousel = () => {
             return (
               <div key={_id}>
                 <div className="w-full h-80 bg-border overflow-hidden relative">
-                  <BlurImage
+                  <ProductImage
                     src={getPrimaryImage(images)}
                     alt={name}
-                    className="w-full transition duration-700 group-hover:scale-105"
+                    // className={`w-full transition duration-700 group-hover:scale-105`}
                   />
                 </div>
 

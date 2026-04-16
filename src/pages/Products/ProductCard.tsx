@@ -7,8 +7,8 @@ import HeartIcon from "./HeartIcon";
 import Ratings from "./Ratings";
 import { useState } from "react";
 import getPrimaryImage from "../../Utils/getPrimaryImage";
-import LazyImage from "../../components/LazyImage";
 import { Product } from "../../types";
+import ProductImage from "../../components/ProductImage";
 
 const ProductCard = ({ p }: { p: Product }) => {
   const [hovered, setHovered] = useState(false);
@@ -23,9 +23,9 @@ const ProductCard = ({ p }: { p: Product }) => {
         style={{ transform: hovered ? "translateY(-4px)" : "none" }}
       >
         <div className="relative overflow-hidden bg-surface-subtle min-w-[250px] sm:min-w-[280px] md:min-w-[300px]  h-48">
-          <div className="relative h-48 bg-surface-subtle">
-            <LazyImage src={getPrimaryImage(p?.images)} alt={p?.name} />
-          </div>
+         <div className="relative w-full aspect-[3/4] bg-surface-subtle rounded-t-lg overflow-hidden">
+  <ProductImage src={getPrimaryImage(p?.images)} alt={p?.name} />
+</div>
 
           <div className="absolute top-3 right-8">
             <HeartIcon product={p} />
@@ -65,7 +65,7 @@ const ProductCard = ({ p }: { p: Product }) => {
                 onClick={(e) => {
                   e.preventDefault();
                   if (p?.countInStock > 0) {
-                    addToCartHandler(p._id, 1);
+                    addToCartHandler(p, 1);
                   }
                 }}
                 disabled={p?.countInStock === 0}

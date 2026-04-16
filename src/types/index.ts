@@ -54,11 +54,11 @@ export interface CartItem {
     name: string;
     images: string[];
     price: number;
+    countInStock: number;
   };
   name: string;
   images: string[];
   price: number;
-  countInStock: number;
   qty: number;
   _id?: string;
   createdAt?: string;

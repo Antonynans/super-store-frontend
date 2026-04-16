@@ -2,15 +2,10 @@ import { FormEvent, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { useProfileMutation } from "../../redux/api/usersApiSlice";
-import { useGetWishlistQuery } from "../../redux/api/wishlistApiSlice";
 import { setCredentials } from "../../redux/features/auth/authSlice";
 import UserOrder from "./UserOrder";
-import Loader from "../../components/Loader";
-import { Link } from "react-router-dom";
-import { useAddToCartMutation } from "../../redux/api/cartApiSlice";
-import { useRemoveFromWishlistMutation } from "../../redux/api/wishlistApiSlice";
-import ProductCard from "../Products/ProductCard";
 import { useAppSelector } from "../../redux/store";
+import Favorites from "../Products/Favorites";
 
 const Profile = () => {
   const [username, setUserName] = useState("");
@@ -19,32 +14,17 @@ const Profile = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [activeTab, setActiveTab] = useState("Orders");
   const tabs = ["Orders", "Wishlist", "Settings"];
+  const [showHeader, setShowHeader] = useState(true);
 
   const { userInfo } = useAppSelector((state) => state.auth);
 
   const [updateProfile, { isLoading: loadingUpdateProfile }] =
     useProfileMutation();
 
-  const {
-    data: wishlist,
-    isLoading: loadingWishlist,
-    error: wishlistError,
-  } = useGetWishlistQuery();
-  const [addToCart] = useAddToCartMutation();
-  const [removeFromWishlist] = useRemoveFromWishlistMutation();
-
   useEffect(() => {
     setUserName(userInfo.username);
     setEmail(userInfo.email);
   }, [userInfo.email, userInfo.username]);
-
-  useEffect(() => {
-    if (wishlistError) {
-      toast.error(
-        (wishlistError as any)?.data?.message || "Failed to load wishlist",
-      );
-    }
-  }, [wishlistError]);
 
   const dispatch = useDispatch();
 
@@ -75,17 +55,14 @@ const Profile = () => {
     <div className="min-h-screen bg-surface-muted">
       <div className=" max-w-7xl mx-auto px-4 lg:flex gap-8">
         <div className="flex items-center gap-4 mb-4">
-          <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white text-2xl font-bold">
+          <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center  text-2xl font-bold">
             {userInfo?.username?.charAt(0).toUpperCase()}
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-text-primary">
+          <div className="w-4/5">
+            <h3 className="text-lg font-semibold text-text-primary truncate">
               {userInfo?.username}
             </h3>
             <p className="text-sm text-text-secondary">{userInfo?.email}</p>
-            <p style={{ color: "#6b7280", fontSize: 14, margin: 0 }}>
-              Member since January 2025
-            </p>
           </div>
         </div>
         <div className="pt-4 ">
@@ -143,33 +120,7 @@ const Profile = () => {
         )}
 
         {activeTab === "Wishlist" && (
-          <div className="pb-12">
-            {loadingWishlist ? (
-              <div className="flex justify-center items-center py-12">
-                <Loader />
-              </div>
-            ) : !wishlist?.products || wishlist.products.length === 0 ? (
-              <div className="text-center py-16">
-                <p className="text-xl text-text-secondary mb-6">
-                  Your wishlist is empty
-                </p>
-                <Link
-                  to="/shop"
-                  className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary transition"
-                >
-                  Continue Shopping
-                </Link>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {wishlist?.products.map((product) => (
-                  <div key={product._id}>
-                    <ProductCard p={product} />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <Favorites setShowHeader={setShowHeader} showHeader={false} />
         )}
 
         {activeTab === "Settings" && (

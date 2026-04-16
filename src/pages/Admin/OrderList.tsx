@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useGetOrdersQuery } from "../../redux/api/orderApiSlice";
 import { useState, useMemo, SetStateAction } from "react";
 import getPrimaryImage from "../../Utils/getPrimaryImage";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const OrderList = () => {
   const { data: orders, isLoading, error } = useGetOrdersQuery();
@@ -197,7 +197,7 @@ const OrderList = () => {
                   disabled={currentPage === 1}
                   className="w-10 h-10 flex items-center justify-center bg-border-dark hover:bg-text-subtle disabled:bg-border disabled:text-text-subtle text-text-primary rounded-lg font-semibold transition-colors"
                 >
-                  <IoIosArrowBack />
+                  <FaChevronLeft size={12} />
                 </button>
 
                 <div className="flex gap-1">
@@ -223,7 +223,7 @@ const OrderList = () => {
                   disabled={currentPage === totalPages}
                   className="w-10 h-10 flex items-center justify-center bg-border-dark hover:bg-text-subtle disabled:bg-border disabled:text-text-subtle text-text-primary rounded-lg font-semibold transition-colors"
                 >
-                  <IoIosArrowForward />
+                  <FaChevronRight size={12} />
                 </button>
               </div>
             </div>

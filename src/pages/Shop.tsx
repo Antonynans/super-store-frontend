@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useGetFilteredProductsQuery } from "../redux/api/productApiSlice";
 import { useFetchCategoriesQuery } from "../redux/api/categoryApiSlice";
 import { FiSliders, FiX, FiSearch } from "react-icons/fi";
-import { IoIosArrowBack } from "react-icons/io";
 import {
   setCategories,
   setProducts,
@@ -16,6 +15,7 @@ import Select from "react-select";
 import { useDebounce } from "../hook/useDebounce";
 import { Product } from "../types";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { FaChevronLeft } from "react-icons/fa";
 
 const ProductCard = lazy(() => import("./Products/ProductCard"));
 
@@ -24,7 +24,7 @@ const Shop = () => {
   const { categories, products, checked, radio } = useAppSelector(
     (state) => state.shop,
   ) as {
-    categories: any[];
+    categories: Product[];
     products: Product[];
     checked: string[];
     radio: string | string[];
@@ -157,7 +157,7 @@ const Shop = () => {
                 onClick={() => navigate(-1)}
                 className="flex items-center gap-1.5 text-primary font-medium hover:text-primary-dark transition-colors duration-200 mr-3"
               >
-                <IoIosArrowBack size={12} />
+                <FaChevronLeft size={12} />
               </button>
 
               <Link
@@ -167,7 +167,7 @@ const Shop = () => {
                 Home
               </Link>
 
-              <span className="mx-2 text-text-subtle select-none">|</span>
+              <FaChevronLeft size={12} className="mx-2" />
 
               <span className="text-text-primary-secondary font-medium">
                 {category

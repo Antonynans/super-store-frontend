@@ -8,7 +8,6 @@ import {
   AiOutlineClose,
 } from "react-icons/ai";
 import {
-  FaHeart,
   FaUser,
   FaBox,
   FaTag,
@@ -17,6 +16,8 @@ import {
   FaUsers,
   FaShoppingCart,
   FaSignOutAlt,
+  FaChevronUp,
+  FaChevronDown,
 } from "react-icons/fa";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../redux/store";
@@ -25,6 +26,9 @@ import { useGetCartQuery } from "../../redux/api/cartApiSlice";
 import { logout } from "../../redux/features/auth/authSlice";
 import FavoritesCount from "../Products/FavoritesCount";
 import { FiHeart } from "react-icons/fi";
+import AnimatedBadge from "../../components/AnimatedBridge";
+import { motion } from "framer-motion";
+import { useGetWishlistQuery } from "../../redux/api/wishlistApiSlice";
 
 const adminMenuItems = [
   { to: "/admin/dashboard", label: "Dashboard", icon: FaTachometerAlt },
@@ -40,6 +44,11 @@ const Navigation = () => {
   const { data: cart = {} } = useGetCartQuery(undefined, {
     skip: !userInfo,
   });
+  const { data: wishlist } = useGetWishlistQuery(undefined, {
+    skip: !userInfo,
+  });
+
+  const favoriteCount = wishlist?.products.length;
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -48,6 +57,11 @@ const Navigation = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [logoutApiCall] = useLogoutMutation();
+
+  const cartItems = (cart as any)?.cartItems || [];
+  const cartCount = cartItems.reduce((a: number, c: any) => a + c.qty, 0);
+
+  const prevCount = useRef(cartCount);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -79,9 +93,6 @@ const Navigation = () => {
     }
   };
 
-  const cartItems = (cart as any)?.cartItems || [];
-  const cartCount = cartItems.reduce((a: number, c: any) => a + c.qty, 0);
-
   const desktopLinkClass = ({ isActive }: { isActive: boolean }) =>
     `relative flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
       isActive
@@ -111,31 +122,16 @@ const Navigation = () => {
             to="/"
             className="flex items-center gap-2.5 flex-shrink-0 group"
           >
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm group-hover:bg-primary transition-colors duration-200">
-              <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
-                <path
-                  d="M3 5h12M3 9h8M3 13h10"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
             <span className="text-[17px] font-bold text-text-primary tracking-tight">
               Shop<span className="text-primary">Nova</span>
             </span>
           </Link>
 
           <div className="flex">
-            <div className="hidden md:flex items-center gap-0.5">
-              {/* <NavLink to="/" end className={desktopLinkClass}>
-              <AiOutlineHome size={18} />
-              <span>Home</span>
-            </NavLink> */}
-
+            <div className="hidden md:flex items-center gap-2">
               <NavLink to="/shop" className={desktopLinkClass}>
-                <AiOutlineShopping size={24} />
-                {/* <span>Shop</span> */}
+                <AiOutlineShopping size={20} />
+                <span>Shop</span>
               </NavLink>
 
               <NavLink
@@ -144,51 +140,52 @@ const Navigation = () => {
                   `${desktopLinkClass({ isActive })} relative`
                 }
               >
-                <FiHeart size={24} />
-                {/* <span>Favorites</span> */}
+                <motion.div
+                  key={favoriteCount}
+                  animate={{ scale: [1, 1.15, 1] }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <FiHeart size={20} />
+                </motion.div>
                 <FavoritesCount />
               </NavLink>
             </div>
 
             <div className="hidden md:flex items-center gap-1">
-              <NavLink to="/cart" className="relative p-2 text-text-secondary">
-                <AiOutlineShoppingCart size={24} />
-                {cartCount > 0 && (
-                  <span className="absolute top-0.5 right-0.5 bg-primary text-white text-[9px] font-bold rounded-full min-w-[15px] min-h-[15px] flex items-center justify-center px-0.5 leading-none">
-                    {cartCount}
-                  </span>
-                )}
+              <NavLink
+                to="/cart"
+                className="relative flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-surface-muted transition"
+              >
+                <motion.div
+                  key={cartCount}
+                  initial={{ scale: 1 }}
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <AiOutlineShoppingCart size={20} />
+                </motion.div>
+                <AnimatedBadge value={cartCount} />
               </NavLink>
 
               {userInfo ? (
                 <div className="relative ml-1" ref={dropdownRef}>
                   <button
                     onClick={() => setDropdownOpen((o) => !o)}
-                    className={`flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl border transition-all duration-200 ${
+                    className={`flex items-center gap-3 px-3 py-1.5 rounded-full border transition ${
                       dropdownOpen
-                        ? "border-primary-light bg-primary-subtle"
-                        : "border-border hover:border-primary-subtle hover:bg-surface-muted"
+                        ? "border-primary bg-primary-subtle"
+                        : "border-border hover:border-primary hover:bg-surface-muted"
                     }`}
                   >
-                    <div className="w-7 h-7 bg-primary rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-bold">
                       {userInfo.username?.charAt(0).toUpperCase()}
                     </div>
-                    <span className="text-text-secondary text-sm font-medium max-w-[90px] truncate">
+
+                    <span className="text-sm font-medium text-text-primary hidden lg:block truncate w-16">
                       {userInfo.username}
                     </span>
-                    <svg
-                      className={`w-3.5 h-3.5 text-text-subtle transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2.5"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
+
+                    {dropdownOpen ? <FaChevronUp size={12} /> : <FaChevronDown size={12} />}
                   </button>
 
                   {dropdownOpen && (
@@ -199,7 +196,7 @@ const Navigation = () => {
                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-secondary hover:bg-surface-muted transition-colors"
                       >
                         <div className="w-6 h-6 bg-primary-subtle rounded-full flex items-center justify-center flex-shrink-0">
-                          <FaUser size={11} className="text-primary" />
+                          <FaUser size={13} className="text-primary" />
                         </div>
                         <span className="font-medium">My Profile</span>
                       </Link>
@@ -238,14 +235,14 @@ const Navigation = () => {
               ) : (
                 <div className="flex items-center gap-2 ml-1">
                   <NavLink to="/login" className={desktopLinkClass}>
-                    <AiOutlineLogin size={18} />
+                    <AiOutlineLogin size={20} />
                     <span>Login</span>
                   </NavLink>
                   <NavLink
                     to="/register"
                     className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-[0_4px_14px_rgba(37,99,235,0.3)]"
                   >
-                    <AiOutlineUserAdd size={18} />
+                    <AiOutlineUserAdd size={20} />
                     <span>Register</span>
                   </NavLink>
                 </div>
@@ -255,12 +252,15 @@ const Navigation = () => {
 
           <div className="flex items-center gap-2 md:hidden">
             <NavLink to="/cart" className="relative p-2 text-text-secondary">
-              <AiOutlineShoppingCart size={22} />
-              {cartCount > 0 && (
-                <span className="absolute top-0.5 right-0.5 bg-primary text-white text-[9px] font-bold rounded-full min-w-[15px] min-h-[15px] flex items-center justify-center px-0.5 leading-none">
-                  {cartCount}
-                </span>
-              )}
+              <motion.div
+                key={cartCount}
+                initial={{ scale: 1 }}
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 0.3 }}
+              >
+                <AiOutlineShoppingCart size={20} />
+              </motion.div>
+              <AnimatedBadge value={cartCount} />
             </NavLink>
             <button
               onClick={() => setMobileMenuOpen((o) => !o)}
@@ -268,9 +268,9 @@ const Navigation = () => {
               aria-label="Toggle navigation"
             >
               {mobileMenuOpen ? (
-                <AiOutlineClose size={22} />
+                <AiOutlineClose size={20} />
               ) : (
-                <AiOutlineMenu size={22} />
+                <AiOutlineMenu size={20} />
               )}
             </button>
           </div>
@@ -278,22 +278,13 @@ const Navigation = () => {
       </div>
 
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border bg-white px-4 pt-3 pb-5 space-y-1 shadow-lg">
-          {/* <NavLink
-            to="/"
-            end
-            className={mobileLinkClass}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <AiOutlineHome size={19} />
-            <span>Home</span>
-          </NavLink> */}
+        <div className="md:hidden border-t border-border bg-white px-4 pt-3 pb-5 space-y-2 shadow-xl animate-slideDown">
           <NavLink
             to="/shop"
             className={mobileLinkClass}
             onClick={() => setMobileMenuOpen(false)}
           >
-            <AiOutlineShopping size={19} />
+            <AiOutlineShopping size={20} />
             <span>Shop</span>
           </NavLink>
           <NavLink
@@ -303,7 +294,13 @@ const Navigation = () => {
             }
             onClick={() => setMobileMenuOpen(false)}
           >
-            <FaHeart size={16} />
+            <motion.div
+              key={favoriteCount}
+              animate={{ scale: [1, 1.15, 1] }}
+              transition={{ duration: 0.3 }}
+            >
+              <FiHeart size={20} />
+            </motion.div>
             <span>Favorites</span>
             <FavoritesCount />
           </NavLink>
@@ -316,7 +313,7 @@ const Navigation = () => {
                 <div className="w-9 h-9 bg-primary rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                   {userInfo.username?.charAt(0).toUpperCase()}
                 </div>
-                <div>
+                <div className="truncate">
                   <p className="text-sm font-semibold text-text-primary leading-tight">
                     {userInfo.username}
                   </p>
@@ -367,7 +364,7 @@ const Navigation = () => {
                 }}
                 className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm font-medium text-danger hover:bg-danger-subtle transition-colors"
               >
-                <FaSignOutAlt size={16} />
+                <FaSignOutAlt size={20} />
                 <span>Logout</span>
               </button>
             </>
@@ -378,7 +375,7 @@ const Navigation = () => {
                 className={mobileLinkClass}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <AiOutlineLogin size={19} />
+                <AiOutlineLogin size={20} />
                 <span>Login</span>
               </NavLink>
               <NavLink
@@ -386,7 +383,7 @@ const Navigation = () => {
                 className={mobileLinkClass}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <AiOutlineUserAdd size={19} />
+                <AiOutlineUserAdd size={20} />
                 <span>Register</span>
               </NavLink>
             </>

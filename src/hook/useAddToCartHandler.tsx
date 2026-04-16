@@ -1,48 +1,43 @@
-import { useAppSelector } from "../redux/store";
+import { useAppSelector, useAppDispatch } from "../redux/store";
 import { useAddToCartMutation } from "../redux/api/cartApiSlice";
+import { addToCart as addToCartRedux } from "../redux/features/cart/cartSlice";
 import { toast } from "react-toastify";
 import { Product } from "../types";
 
 export const useAddToCartHandler = () => {
+  const dispatch = useAppDispatch();
   const { userInfo } = useAppSelector((state) => state.auth);
   const [addToCart] = useAddToCartMutation();
 
-  const addToCartHandler = async (
-    productId: string,
-    qty: number,
-    checkStock: boolean = false,
-    product?: Product,
-  ) => {
+  const addToCartHandler = async (product: Product, qty: number = 1) => {
     if (!userInfo) {
-      toast.error("Please login to add items to cart", {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 2000,
-      });
+      toast.error("Please login to add items to cart");
       return;
     }
 
-    if (checkStock && (!product?.countInStock || product?.countInStock <= 0)) {
-      toast.error("Product is out of stock", {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 2000,
-      });
+    if (!product.countInStock || qty > product.countInStock) {
+      toast.error("Not enough stock available");
       return;
     }
+
+    dispatch(
+      addToCartRedux({
+        _id: product._id,
+        name: product.name,
+        price: product.price,
+        image: product.images?.[0],
+        countInStock: product.countInStock,
+        qty,
+      }),
+    );
 
     try {
       await addToCart({
-        productId,
+        productId: product._id,
         qty,
       }).unwrap();
-      toast.success("Product added to cart", {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 2000,
-      });
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to add to cart", {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 2000,
-      });
+      toast.error(error?.data?.message || "Failed to add to cart");
     }
   };
 
