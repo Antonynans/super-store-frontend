@@ -36,7 +36,6 @@ const Register = () => {
       const res = await register({ username, email, password }).unwrap();
       dispatch(setCredentials({ ...res }));
       navigate(redirect);
-      toast.success("Account created successfully");
     } catch (err: any) {
       console.log(err);
       toast.error(err.data.message);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAppSelector } from "../../redux/store";
 import { toast } from "react-toastify";
@@ -14,13 +14,15 @@ import {
   FaStore,
   FaArrowLeft,
   FaCheck,
+  FaChevronLeft,
 } from "react-icons/fa";
-import { IoIosArrowBack } from "react-icons/io";
 import moment from "moment";
 import HeartIcon from "./HeartIcon";
 import Ratings from "./Ratings";
 import ProductTabs from "./ProductTabs";
-import BlurImage from "../../components/BlurImage";
+import ProductImage from "../../components/ProductImage";
+import { X } from "lucide-react";
+import { motion } from "framer-motion";
 
 const ProductDetails = () => {
   const { id: productId } = useParams();
@@ -29,7 +31,12 @@ const ProductDetails = () => {
   const [qty, setQty] = useState(1);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [selectedImage, setSelectedImage] = useState("");
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const dragStartX = useRef<number | null>(null);
+
+  const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const {
     data: product,
@@ -44,8 +51,9 @@ const ProductDetails = () => {
     useCreateReviewMutation();
 
   const addToCartHandler = useAddToCartHandler();
+
   const productImages = product?.images || [];
-  const activeImage = selectedImage || productImages[0] || "";
+  const activeImage = productImages[selectedIndex] || "";
 
   const getErrorMessage = (err: any) => {
     if (err && typeof err === "object" && "data" in err) {
@@ -59,30 +67,54 @@ const ProductDetails = () => {
   };
 
   useEffect(() => {
-    setSelectedImage("");
+    setSelectedIndex(0);
   }, [productId]);
 
   useEffect(() => {
-    if (activeImage) {
-      const img = new Image();
-      img.src = activeImage;
+    const preload = (index: number) => {
+      if (productImages[index]) {
+        const img = new Image();
+        img.src = productImages[index];
+      }
+    };
+    preload(selectedIndex + 1);
+    preload(selectedIndex - 1);
+  }, [selectedIndex, productImages]);
+
+  useEffect(() => {
+    thumbnailRefs.current[selectedIndex]?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center",
+    });
+  }, [selectedIndex]);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    dragStartX.current = e.clientX;
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (dragStartX.current === null) return;
+    const delta = dragStartX.current - e.clientX;
+    const threshold = 50;
+
+    if (delta > threshold) {
+      setSelectedIndex((prev) => Math.min(prev + 1, productImages.length - 1));
+    } else if (delta < -threshold) {
+      setSelectedIndex((prev) => Math.max(prev - 1, 0));
     }
-  }, [activeImage]);
+
+    dragStartX.current = null;
+  };
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!productId) {
       toast.error("Product ID is missing");
       return;
     }
-
     try {
-      await createReview({
-        productId,
-        rating,
-        comment,
-      }).unwrap();
+      await createReview({ productId, rating, comment }).unwrap();
       refetch();
       toast.success("Review created successfully");
       setRating(0);
@@ -94,7 +126,6 @@ const ProductDetails = () => {
 
   return (
     <div className="bg-surface-subtle min-h-screen py-8">
-      {/* Breadcrumb Nav */}
       {product && (
         <div className="max-w-7xl mx-auto px-4 mb-6">
           <nav className="flex items-center gap-0 text-sm flex-wrap">
@@ -102,27 +133,15 @@ const ProductDetails = () => {
               onClick={() => navigate(-1)}
               className="flex items-center gap-1.5 text-primary font-medium hover:text-primary-dark transition-colors duration-200 mr-3"
             >
-              <IoIosArrowBack size={12} />
+              <FaChevronLeft size={12} />
             </button>
-
             <Link
               to="/shop"
               className="text-primary hover:text-primary-dark font-medium transition-colors duration-200"
             >
               Products
             </Link>
-
-            <span className="mx-2 text-text-subtle select-none">|</span>
-
-            {/* <Link
-              to="/shop"
-              className="text-primary hover:text-primary-dark font-medium transition-colors duration-200"
-            >
-              Categories
-            </Link> */}
-
-            {/* <span className="mx-2 text-text-subtle select-none">|</span> */}
-
+            <FaChevronLeft size={12} className="mx-2" />
             {product.category && (
               <>
                 <Link
@@ -137,10 +156,9 @@ const ProductDetails = () => {
                     ? product.category
                     : product.category?.name || "Category"}
                 </Link>
-                <span className="mx-2 text-text-subtle select-none">|</span>
+                <FaChevronLeft size={12} className="mx-2" />
               </>
             )}
-
             <span
               className="text-text-primary-secondary font-medium truncate max-w-[200px] sm:max-w-xs md:max-w-sm"
               title={product.name}
@@ -150,52 +168,74 @@ const ProductDetails = () => {
           </nav>
         </div>
       )}
+
       {isLoading ? (
         <div className="flex justify-center items-center h-96">
           <Loader />
         </div>
       ) : error ? (
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-            <div className="mb-6">
-              <div className="text-6xl text-status-error mb-4">⚠️</div>
-              <h1 className="text-3xl font-bold text-text-primary mb-2">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="max-w-6xl mx-auto px-4 py-16">
+            <div className=" rounded-2xl shadow-xl p-10 text-center relative overflow-hidden">
+              <div className="absolute inset-0  pointer-events-none" />
+
+              <div className="relative z-10 mb-6">
+                <div className="mx-auto w-20 h-20 flex items-center justify-center rounded-full bg-red-100 text-red-500 text-4xl shadow-sm">
+                  ⚠️
+                </div>
+              </div>
+
+              <h1 className="relative z-10 text-3xl sm:text-4xl font-bold text-gray-800 mb-3">
                 Product Not Found
               </h1>
-              <p className="text-text-primary-secondary text-lg mb-2">
-                {getErrorMessage(error as any)}
-              </p>
-            </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-              <button
-                onClick={() => navigate(-1)}
-                className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300"
-              >
-                <FaArrowLeft size={18} />
-              </button>
-              <Link
-                to="/shop"
-                className="flex items-center justify-center gap-2 bg-status-success hover:bg-status-success/90 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300"
-              >
-                <FaStore size={18} />
-                Back to Shop
-              </Link>
-              <Link
-                to="/"
-                className="flex items-center justify-center gap-2 bg-text-primary-secondary hover:bg-text-secondary text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300"
-              >
-                <FaBox size={18} />
-                Home Page
-              </Link>
+              <p className="relative z-10 text-gray-500 text-lg max-w-md mx-auto mb-2">
+                {getErrorMessage(error as any) ||
+                  "This product may have been removed or is no longer available."}
+              </p>
+
+              <p className="relative z-10 text-sm text-gray-400">
+                Try exploring similar products or continue shopping.
+              </p>
+
+              <div className="relative z-10 flex flex-col sm:flex-row gap-4 justify-center mt-10">
+                <button
+                  onClick={() => navigate(-1)}
+                  className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-lg transition"
+                >
+                  <FaChevronLeft size={16} />
+                  Go Back
+                </button>
+
+                <Link
+                  to="/shop"
+                  className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-lg transition shadow-md hover:shadow-lg"
+                >
+                  <FaStore size={16} />
+                  Continue Shopping
+                </Link>
+
+                <Link
+                  to="/"
+                  className="flex items-center justify-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-3 px-6 rounded-lg transition"
+                >
+                  <FaBox size={16} />
+                  Home
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       ) : !product ? (
         <div className="max-w-7xl mx-auto px-4">
           <div className="bg-white rounded-lg shadow-lg p-12 text-center">
             <div className="mb-6">
-              <div className="text-6xl text-accent-subtle0 mb-4">❌</div>
+              <div className="text-6xl mb-4">
+                <X color="red" />
+              </div>
               <h1 className="text-3xl font-bold text-text-primary mb-2">
                 Product Unavailable
               </h1>
@@ -203,7 +243,6 @@ const ProductDetails = () => {
                 This product could not be loaded. Please try again later.
               </p>
             </div>
-
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
               <button
                 onClick={() => navigate(-1)}
@@ -225,32 +264,42 @@ const ProductDetails = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
             <div className="flex flex-col">
-              <div className="bg-white lg:h-[38rem] h-96 rounded-lg shadow-lg overflow-hidden mb-6 relative group">
-                <BlurImage
-                  src={activeImage}
-                  alt={product.name}
-                  className="w-full transition duration-700 group-hover:scale-105"
-                />
+              <div
+                className="bg-white lg:h-[38rem] h-96 rounded-lg shadow-lg overflow-hidden mb-6 relative group cursor-grab active:cursor-grabbing select-none"
+                onPointerDown={handlePointerDown}
+                onPointerUp={handlePointerUp}
+              >
+                <ProductImage src={activeImage} alt={product.name} />
+
+                {productImages.length > 1 && (
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 lg:hidden">
+                    {productImages.map((_: string, i: number) => (
+                      <span
+                        key={i}
+                        className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                          i === selectedIndex ? "bg-primary w-3" : "bg-white/60"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
 
               {productImages.length > 1 && (
-                <div className="h-24 flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-                  {productImages.map((image: string) => (
+                <div className="h-24 flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory touch-pan-x">
+                  {productImages.map((image: string, index: number) => (
                     <button
                       key={image}
+                      ref={(el) => (thumbnailRefs.current[index] = el)}
                       type="button"
-                      onClick={() => setSelectedImage(image)}
-                      className={`min-w-[90px] flex-shrink-0 snap-start overflow-hidden rounded-lg border-2 bg-white ${
-                        activeImage === image
+                      onClick={() => setSelectedIndex(index)}
+                      className={`relative min-w-[90px] h-24 flex-shrink-0 snap-start overflow-hidden rounded-lg border-2 bg-white transition-all duration-200 ${
+                        index === selectedIndex
                           ? "border-primary"
-                          : "border-transparent"
+                          : "border-transparent opacity-60 hover:opacity-100"
                       }`}
                     >
-                      <BlurImage
-                        src={image}
-                        alt={product.name}
-                        className="h-24 w-full"
-                      />
+                      <ProductImage src={image} alt={product.name} />
                     </button>
                   ))}
                 </div>
@@ -259,25 +308,22 @@ const ProductDetails = () => {
 
             <div className="h-fit bg-white rounded-lg shadow-lg p-8 flex flex-col justify-between">
               <div>
-                {/* <p className="text-text-primary text-sm">{product.brand}</p> */}
                 <h1 className="md:text-4xl text-2xl font-bold text-text-primary">
                   {product.name}
                 </h1>
                 <p className="text-text-primary-secondary leading-relaxed mb-4">
                   {product.description}
                 </p>
-
                 <div className="flex items-center gap-8 mb-6">
-                  <div className="">
+                  <div>
                     <Ratings
                       value={product.rating}
                       text={`${product.numReviews} reviews`}
                     />
                   </div>
-
                   <div className="flex items-start gap-3">
                     <div className="text-xs md:flex items-center gap-1">
-                      <p className=" text-text-primary-secondary font-medium">
+                      <p className="text-text-primary-secondary font-medium">
                         Added
                       </p>
                       <p className="text-text-primary font-semibold">
@@ -286,7 +332,6 @@ const ProductDetails = () => {
                     </div>
                   </div>
                 </div>
-
                 <div className="mb-8">
                   <p className="text-text-primary-secondary text-sm mb-2 font-medium">
                     Price
@@ -338,7 +383,7 @@ const ProductDetails = () => {
                       </button>
                     </div>
                     <span className="text-[#6b7280] text-[13px]">
-                      In stock <br />{" "}
+                      In stock <br />
                       <strong>{product.countInStock} items</strong>
                     </span>
                   </div>
@@ -347,7 +392,7 @@ const ProductDetails = () => {
                 <div className="flex gap-3 items-center h-[60px]">
                   <button
                     onClick={() =>
-                      addToCartHandler(product._id, qty, true, product)
+                      addToCartHandler(product, qty)
                     }
                     disabled={
                       !product.countInStock || product.countInStock <= 0
@@ -363,7 +408,7 @@ const ProductDetails = () => {
                       ? "Add to Cart"
                       : "Out of Stock"}
                   </button>
-                  <div className="w-20 h-full flex flex-col items-center justify-center relative border border-[#e5e7eb] rounded-lg ">
+                  <div className="w-20 h-full flex flex-col items-center justify-center relative border border-[#e5e7eb] rounded-lg">
                     <HeartIcon product={product} />
                   </div>
                 </div>

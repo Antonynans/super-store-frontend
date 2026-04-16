@@ -54,6 +54,15 @@ export const cartApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Cart"],
     }),
+
+    updateCartQty: builder.mutation<Cart, { productId: string; qty: number }>({
+      query: (data) => ({
+        url: `${CART_URL}/update/${data.productId}`,
+        method: "PUT",
+        body: { qty: data.qty },
+      }),
+      invalidatesTags: ["Cart"],
+    }),
   }),
 });
 
@@ -64,4 +73,5 @@ export const {
   useUpdateShippingAddressMutation,
   useUpdatePaymentMethodMutation,
   useClearCartMutation,
+  useUpdateCartQtyMutation,
 } = cartApiSlice;
