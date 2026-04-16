@@ -2,12 +2,11 @@ import { apiSlice } from "./apiSlice";
 import { USERS_URL } from "../constants";
 import { User } from "../../types";
 
+export type AuthResponse = User & { accessToken: string };
+
 export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<
-      { user: User; token: string },
-      { email: string; password: string }
-    >({
+    login: builder.mutation<AuthResponse, { email: string; password: string }>({
       query: (data) => ({
         url: `${USERS_URL}/auth`,
         method: "POST",
@@ -15,13 +14,19 @@ export const userApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     register: builder.mutation<
-      { user: User; token: string },
+      AuthResponse,
       { username: string; email: string; password: string }
     >({
       query: (data) => ({
         url: `${USERS_URL}`,
         method: "POST",
         body: data,
+      }),
+    }),
+    refreshToken: builder.mutation<AuthResponse, void>({
+      query: () => ({
+        url: `${USERS_URL}/refresh-token`,
+        method: "POST",
       }),
     }),
     logout: builder.mutation<{ message: string }, void>({
@@ -76,6 +81,7 @@ export const {
   useLoginMutation,
   useLogoutMutation,
   useRegisterMutation,
+  useRefreshTokenMutation,
   useProfileMutation,
   useGetUsersQuery,
   useDeleteUserMutation,
