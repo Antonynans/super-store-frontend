@@ -90,7 +90,7 @@ const HeartIcon = ({ product }: { product: Product }) => {
       {isFavorite ? (
         <FaHeart className="text-pink-500 text-2xl" />
       ) : (
-        <FaRegHeart className="text-yellow-400 text-2xl hover:text-pink-500" />
+        <FaRegHeart className="text-accent text-2xl hover:text-pink-500" />
       )}
     </div>
   );

@@ -46,7 +46,7 @@ const AllProducts = () => {
   if (isError) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-surface-muted to-surface-subtle flex items-center justify-center">
-        <div className="text-red-600 text-lg font-semibold">
+        <div className="text-danger-light text-lg font-semibold">
           Error loading products
         </div>
       </div>
@@ -58,7 +58,7 @@ const AllProducts = () => {
       <div className="min-h-screen bg-gradient-to-br from-surface-muted to-surface-subtle p-6">
         <div className="max-w-7xl mx-auto mt-8">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-4xl font-bold text-text-primary mb-2">
               All Products
             </h1>
             <p className="text-text-secondary">
@@ -70,7 +70,7 @@ const AllProducts = () => {
           <div className="bg-white rounded-2xl shadow-md overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-border text-gray-900 border-b border-gray-300">
+                <thead className="bg-border text-text-primary border-b border-border-dark">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-semibold">
                       Image
@@ -111,7 +111,7 @@ const AllProducts = () => {
                         </td>
                         <td className="px-6 py-4">
                           <div>
-                            <p className="font-semibold text-gray-900">
+                            <p className="font-semibold text-text-primary">
                               {product.name}
                             </p>
                             <p className="text-sm text-text-secondary mt-1">
@@ -120,7 +120,7 @@ const AllProducts = () => {
                           </div>
                         </td>
                         {/* <td className="px-6 py-4">
-                          <span className="text-sm text-gray-700">
+                          <span className="text-sm text-text-secondary">
                             {product.brand || "N/A"}
                           </span>
                         </td> */}
@@ -133,8 +133,8 @@ const AllProducts = () => {
                           <span
                             className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                               product.countInStock > 0
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
+                                ? "bg-amber-light text-amber-dark"
+                                : "bg-danger-subtle text-danger-dark"
                             }`}
                           >
                             {product.countInStock || 0}
@@ -183,17 +183,17 @@ const AllProducts = () => {
 
             {totalPages > 1 && (
               <div className="flex items-center justify-between p-6 bg-surface-subtle border-t border-border">
-                <div className="text-sm text-gray-700">
+                <div className="text-sm text-text-secondary">
                   Page{" "}
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-semibold text-text-primary">
                     {currentPage}
                   </span>{" "}
                   of{" "}
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-semibold text-text-primary">
                     {totalPages}
                   </span>{" "}
                   • Showing{" "}
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-semibold text-text-primary">
                     {paginatedProducts.length}
                   </span>{" "}
                   products
@@ -203,7 +203,7 @@ const AllProducts = () => {
                   <button
                     onClick={handlePreviousPage}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 bg-gray-300 hover:bg-gray-400 disabled:bg-border disabled:text-gray-400 text-gray-900 rounded-lg font-semibold transition-colors"
+                    className="px-4 py-2 bg-border-dark hover:bg-text-subtle disabled:bg-border disabled:text-text-subtle text-text-primary rounded-lg font-semibold transition-colors"
                   >
                     ← Previous
                   </button>
@@ -217,7 +217,7 @@ const AllProducts = () => {
                           className={`w-10 h-10 rounded-lg font-semibold transition-colors ${
                             currentPage === page
                               ? "bg-pink-500 text-white"
-                              : "bg-gray-300 hover:bg-gray-400 text-gray-900"
+                              : "bg-border-dark hover:bg-text-subtle text-text-primary"
                           }`}
                         >
                           {page}
@@ -229,7 +229,7 @@ const AllProducts = () => {
                   <button
                     onClick={handleNextPage}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 bg-gray-300 hover:bg-gray-400 disabled:bg-border disabled:text-gray-400 text-gray-900 rounded-lg font-semibold transition-colors"
+                    className="px-4 py-2 bg-border-dark hover:bg-text-subtle disabled:bg-border disabled:text-text-subtle text-text-primary rounded-lg font-semibold transition-colors"
                   >
                     Next →
                   </button>

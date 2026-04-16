@@ -52,7 +52,7 @@ const Ratings = ({ value, text }: RatingsProps) => {
         })}
       </div>
       <div className="flex items-center gap-8">
-        <span className="text-gray-900 font-semibold text-sm">
+        <span className="text-text-primary font-semibold text-sm">
           {Math.round(value * 2) / 2}
         </span>
         {text && (

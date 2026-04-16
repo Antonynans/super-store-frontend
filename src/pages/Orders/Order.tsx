@@ -26,7 +26,6 @@ const Order = () => {
     skip: !orderId,
   });
 
-  
   const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
   const [deliverOrder, { isLoading: loadingDeliver }] =
     useDeliverOrderMutation();
@@ -40,21 +39,21 @@ const Order = () => {
     error: errorPayPal,
   } = useGetPaypalClientIdQuery();
 
- const isPayPalReady = paypal?.clientId && order && !order.isPaid;
+  const isPayPalReady = paypal?.clientId && order && !order.isPaid;
 
-// useEffect(() => {
-//   if (!isPayPalReady || errorPayPal || loadingPayPal) return;
+  // useEffect(() => {
+  //   if (!isPayPalReady || errorPayPal || loadingPayPal) return;
 
-//   paypalDispatch({
-//     type: "setOptions",
-//     value: {
-//       "client-id": paypal.clientId,
-//       currency: "USD",
-//     },
-//   });
+  //   paypalDispatch({
+  //     type: "setOptions",
+  //     value: {
+  //       "client-id": paypal.clientId,
+  //       currency: "USD",
+  //     },
+  //   });
 
-//   paypalDispatch({ type: "setLoadingStatus", value: "pending" });
-// }, [isPayPalReady, errorPayPal, loadingPayPal, paypalDispatch]);
+  //   paypalDispatch({ type: "setLoadingStatus", value: "pending" });
+  // }, [isPayPalReady, errorPayPal, loadingPayPal, paypalDispatch]);
 
   // const onApprove = async (data: any, actions: any) => {
   //   const details = await actions.order.capture();
@@ -99,7 +98,7 @@ const Order = () => {
   ) : (
     <div className="container flex flex-col ml-[10rem] md:flex-row">
       <div className="md:w-2/3 pr-4">
-        <div className="border gray-300 mt-5 pb-4 mb-5">
+        <div className="border border-dark mt-5 pb-4 mb-5">
           {order?.orderItems.length === 0 ? (
             <Message>Order is empty</Message>
           ) : (
@@ -153,7 +152,7 @@ const Order = () => {
       </div>
 
       <div className="md:w-1/3">
-        <div className="mt-5 border-gray-300 pb-4 mb-4">
+        <div className="mt-5 border-border-dark pb-4 mb-4">
           <h2 className="text-xl font-bold mb-2">Shipping</h2>
           <p className="mb-4 mt-4">
             <strong className="text-pink-500">Order:</strong> {order?._id}

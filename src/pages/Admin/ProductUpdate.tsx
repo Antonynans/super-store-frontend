@@ -169,7 +169,7 @@ const AdminProductUpdate = () => {
         <div className="max-w-6xl mx-auto">
           <div className="mt-8">
             <div className="mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              <h1 className="text-4xl font-bold text-text-primary mb-2">
                 Update Product
               </h1>
               <p className="text-text-secondary">
@@ -208,7 +208,7 @@ const AdminProductUpdate = () => {
                       d="M12 4v16m8-8H4"
                     />
                   </svg>
-                  <span className="text-gray-900 font-bold text-lg">
+                  <span className="text-text-primary font-bold text-lg">
                     {uploading ? "Uploading..." : "Upload Product Images"}
                   </span>
                   <span className="text-text-secondary text-sm mt-1">
@@ -230,7 +230,7 @@ const AdminProductUpdate = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-gray-900 font-semibold mb-2">
+                  <label className="block text-text-primary font-semibold mb-2">
                     Product Name *
                   </label>
                   <input
@@ -239,11 +239,11 @@ const AdminProductUpdate = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border-dark rounded-xl bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                   />
                 </div>
                 {/* <div>
-                  <label className="block text-gray-900 font-semibold mb-2">
+                  <label className="block text-text-primary font-semibold mb-2">
                     Brand
                   </label>
                   <input
@@ -251,14 +251,14 @@ const AdminProductUpdate = () => {
                     name="brand"
                     value={formData.brand}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border-dark rounded-xl bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                   />
                 </div> */}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-gray-900 font-semibold mb-2">
+                  <label className="block text-text-primary font-semibold mb-2">
                     Price * ($)
                   </label>
                   <input
@@ -268,11 +268,11 @@ const AdminProductUpdate = () => {
                     onChange={handleInputChange}
                     required
                     step="0.01"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border-dark rounded-xl bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-900 font-semibold mb-2">
+                  <label className="block text-text-primary font-semibold mb-2">
                     Stock Count
                   </label>
                   <input
@@ -280,11 +280,11 @@ const AdminProductUpdate = () => {
                     name="countInStock"
                     value={formData.countInStock}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border-dark rounded-xl bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-900 font-semibold mb-2">
+                  <label className="block text-text-primary font-semibold mb-2">
                     Category *
                   </label>
                   <select
@@ -292,7 +292,7 @@ const AdminProductUpdate = () => {
                     value={formData.category}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border-dark rounded-xl bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                   >
                     <option value="">Select a category</option>
                     {categories?.map((c) => (
@@ -305,7 +305,7 @@ const AdminProductUpdate = () => {
               </div>
 
               <div>
-                <label className="block text-gray-900 font-semibold mb-2">
+                <label className="block text-text-primary font-semibold mb-2">
                   Description
                 </label>
                 <textarea
@@ -313,7 +313,7 @@ const AdminProductUpdate = () => {
                   value={formData.description}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-border-dark rounded-xl bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                 />
               </div>
 
@@ -329,7 +329,7 @@ const AdminProductUpdate = () => {
                 <button
                   type="button"
                   onClick={handleDelete}
-                  className="flex-1 py-3 px-8 rounded-xl text-lg font-bold bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition text-white shadow-md"
+                  className="flex-1 py-3 px-8 rounded-xl text-lg font-bold bg-gradient-to-r from-danger to-danger-light hover:from-danger-light hover:to-danger-light transition text-white shadow-md"
                 >
                   Delete Product
                 </button>

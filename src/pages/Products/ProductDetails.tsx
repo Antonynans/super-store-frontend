@@ -195,7 +195,7 @@ const ProductDetails = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="bg-white rounded-lg shadow-lg p-12 text-center">
             <div className="mb-6">
-              <div className="text-6xl text-yellow-500 mb-4">❌</div>
+              <div className="text-6xl text-accent-subtle0 mb-4">❌</div>
               <h1 className="text-3xl font-bold text-text-primary mb-2">
                 Product Unavailable
               </h1>

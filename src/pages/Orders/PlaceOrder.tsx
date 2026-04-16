@@ -51,8 +51,10 @@ const PlaceOrder = () => {
       <div className="bg-white border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="flex items-center gap-3 mb-2">
-            <FaClipboardList className="text-blue-600 text-3xl" />
-            <h1 className="text-4xl font-bold text-gray-900">Order Review</h1>
+            <FaClipboardList className="text-primary text-3xl" />
+            <h1 className="text-4xl font-bold text-text-primary">
+              Order Review
+            </h1>
           </div>
           <p className="text-text-secondary">
             Review your order details before confirming purchase
@@ -72,7 +74,7 @@ const PlaceOrder = () => {
             </p>
             <Link
               to="/shop"
-              className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+              className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary transition"
             >
               Continue Shopping
             </Link>
@@ -82,62 +84,64 @@ const PlaceOrder = () => {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
                 <div className="p-6 border-b border-border">
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-xl font-semibold text-text-primary">
                     Order Items
                   </h2>
                 </div>
 
                 <div className="divide-y divide-border">
-                  {cart.cartItems.map((item: CartItem, index: Key | null | undefined) => (
-                    <div
-                      key={index}
-                      className="p-6 hover:bg-surface-muted transition"
-                    >
-                      <div className="flex gap-6">
-                        <div className="flex-shrink-0">
-                          <img
-                            src={getPrimaryImage(item.images)}
-                            alt={item.name}
-                            className="h-24 w-24 object-cover rounded-lg border border-border"
-                          />
-                        </div>
+                  {cart.cartItems.map(
+                    (item: CartItem, index: Key | null | undefined) => (
+                      <div
+                        key={index}
+                        className="p-6 hover:bg-surface-muted transition"
+                      >
+                        <div className="flex gap-6">
+                          <div className="flex-shrink-0">
+                            <img
+                              src={getPrimaryImage(item.images)}
+                              alt={item.name}
+                              className="h-24 w-24 object-cover rounded-lg border border-border"
+                            />
+                          </div>
 
-                        <div className="flex-1">
-                          <Link
-                            to={`/product/${item.product}`}
-                            className="text-lg font-semibold text-blue-600 hover:text-blue-700 block mb-2"
-                          >
-                            {item.name}
-                          </Link>
-                          <div className="flex gap-8 text-text-secondary">
-                            <div>
-                              <span className="font-medium">Quantity:</span>{" "}
-                              {item.qty}
-                            </div>
-                            <div>
-                              <span className="font-medium">Price:</span> $
-                              {item.price.toFixed(2)}
+                          <div className="flex-1">
+                            <Link
+                              to={`/product/${item.product}`}
+                              className="text-lg font-semibold text-primary hover:text-primary block mb-2"
+                            >
+                              {item.name}
+                            </Link>
+                            <div className="flex gap-8 text-text-secondary">
+                              <div>
+                                <span className="font-medium">Quantity:</span>{" "}
+                                {item.qty}
+                              </div>
+                              <div>
+                                <span className="font-medium">Price:</span> $
+                                {item.price.toFixed(2)}
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-gray-900">
-                            ${(item.qty * item.price).toFixed(2)}
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-text-primary">
+                              ${(item.qty * item.price).toFixed(2)}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ),
+                  )}
                 </div>
               </div>
 
               <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <h2 className="text-xl font-semibold text-text-primary mb-4">
                   Shipping Address
                 </h2>
                 <div className="bg-surface-muted rounded-lg p-4 border border-border">
-                  <p className="text-gray-700">
+                  <p className="text-text-secondary">
                     <span className="font-semibold">
                       {cart.shippingAddress.address}
                     </span>
@@ -153,11 +157,11 @@ const PlaceOrder = () => {
               </div>
 
               <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <h2 className="text-xl font-semibold text-text-primary mb-4">
                   Payment Method
                 </h2>
                 <div className="bg-surface-muted rounded-lg p-4 border border-border">
-                  <p className="text-gray-700">
+                  <p className="text-text-secondary">
                     <span className="font-semibold">{cart.paymentMethod}</span>
                   </p>
                 </div>
@@ -166,7 +170,7 @@ const PlaceOrder = () => {
 
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
-                <h3 className="text-xl font-semibold text-gray-900 mb-6">
+                <h3 className="text-xl font-semibold text-text-primary mb-6">
                   Order Summary
                 </h3>
 
@@ -191,10 +195,10 @@ const PlaceOrder = () => {
                   </div>
 
                   <div className="border-t border-border pt-4 flex justify-between">
-                    <span className="text-lg font-semibold text-gray-900">
+                    <span className="text-lg font-semibold text-text-primary">
                       Total
                     </span>
-                    <span className="text-2xl font-bold text-blue-600">
+                    <span className="text-2xl font-bold text-primary">
                       ${parseFloat(cart.totalPrice || 0).toFixed(2)}
                     </span>
                   </div>
@@ -208,7 +212,7 @@ const PlaceOrder = () => {
 
                 <button
                   type="button"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full bg-primary hover:bg-primary text-white font-semibold py-3 px-4 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   disabled={cart.cartItems.length === 0 || isLoading}
                   onClick={placeOrderHandler}
                 >

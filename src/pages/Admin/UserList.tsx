@@ -42,11 +42,7 @@ const UserList = () => {
     }
   };
 
-  const toggleEdit = (
-    id: string,
-    username: string,
-    email: string,
-  ) => {
+  const toggleEdit = (id: string, username: string, email: string) => {
     setEditableUserId(id);
     setEditableUserName(username);
     setEditableUserEmail(email);
@@ -93,7 +89,7 @@ const UserList = () => {
         ) : (
           <>
             <div className="mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              <h1 className="text-4xl font-bold text-text-primary mb-2">
                 Manage Users
               </h1>
               <p className="text-text-secondary">
@@ -105,7 +101,7 @@ const UserList = () => {
             <div className="bg-white rounded-2xl shadow-md overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-border text-gray-900 border-b border-gray-300">
+                  <thead className="bg-border text-text-primary border-b border-border-dark">
                     <tr>
                       <th className="px-6 py-4 text-left text-sm font-semibold">
                         User ID
@@ -145,12 +141,12 @@ const UserList = () => {
                                   onChange={(e) =>
                                     setEditableUserName(e.target.value)
                                   }
-                                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                                  className="flex-1 px-3 py-2 border border-border-dark rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-pink-500"
                                 />
                               </div>
                             ) : (
                               <div className="flex items-center gap-2">
-                                <span className="font-semibold text-gray-900">
+                                <span className="font-semibold text-text-primary">
                                   {user.username}
                                 </span>
                               </div>
@@ -165,7 +161,7 @@ const UserList = () => {
                                   onChange={(e) =>
                                     setEditableUserEmail(e.target.value)
                                   }
-                                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                                  className="flex-1 px-3 py-2 border border-border-dark rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-pink-500"
                                 />
                               </div>
                             ) : (
@@ -179,11 +175,11 @@ const UserList = () => {
                           </td>
                           <td className="px-6 py-4 text-center">
                             {user.isAdmin ? (
-                              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-light text-amber-dark">
                                 <FaCheck className="mr-1" /> Admin
                               </span>
                             ) : (
-                              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-surface-subtle text-gray-800">
+                              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-surface-subtle text-text-primary">
                                 <FaTimes className="mr-1" /> User
                               </span>
                             )}
@@ -194,13 +190,13 @@ const UserList = () => {
                                 <>
                                   <button
                                     onClick={() => updateHandler(user._id)}
-                                    className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold transition-colors text-sm"
+                                    className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-amber to-amber hover:from-amber hover:to-amber-dark text-white rounded-lg font-semibold transition-colors text-sm"
                                   >
                                     <FaCheck className="mr-1" /> Save
                                   </button>
                                   <button
                                     onClick={cancelEdit}
-                                    className="inline-flex items-center px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-900 rounded-lg font-semibold transition-colors text-sm"
+                                    className="inline-flex items-center px-4 py-2 bg-border-dark hover:bg-text-subtle text-text-primary rounded-lg font-semibold transition-colors text-sm"
                                   >
                                     <FaTimes className="mr-1" /> Cancel
                                   </button>
@@ -215,7 +211,7 @@ const UserList = () => {
                                         user.email,
                                       )
                                     }
-                                    className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors text-sm"
+                                    className="inline-flex items-center px-4 py-2 bg-primary-light hover:bg-primary text-white rounded-lg font-semibold transition-colors text-sm"
                                   >
                                     <FaEdit className="mr-1" /> Edit
                                   </button>
@@ -224,8 +220,8 @@ const UserList = () => {
                                     disabled={user.isAdmin}
                                     className={`inline-flex items-center px-4 py-2 rounded-lg font-semibold transition-colors text-sm ${
                                       user.isAdmin
-                                        ? "bg-gray-300 text-text-secondary cursor-not-allowed"
-                                        : "bg-red-500 hover:bg-red-600 text-white"
+                                        ? "bg-border-dark text-text-secondary cursor-not-allowed"
+                                        : "bg-danger hover:bg-danger-light text-white"
                                     }`}
                                   >
                                     <FaTrash className="mr-1" /> Delete
@@ -264,8 +260,8 @@ const UserList = () => {
                       disabled={currentPage === 1}
                       className={`px-4 py-2 rounded-lg font-semibold transition-colors text-sm ${
                         currentPage === 1
-                          ? "bg-border text-gray-400 cursor-not-allowed"
-                          : "bg-blue-500 hover:bg-blue-600 text-white"
+                          ? "bg-border text-text-subtle cursor-not-allowed"
+                          : "bg-primary-light hover:bg-primary text-white"
                       }`}
                     >
                       Previous
@@ -278,8 +274,8 @@ const UserList = () => {
                             onClick={() => setCurrentPage(page)}
                             className={`px-3 py-2 rounded-lg font-semibold text-sm transition-colors ${
                               currentPage === page
-                                ? "bg-blue-600 text-white"
-                                : "bg-border text-gray-900 hover:bg-gray-300"
+                                ? "bg-primary text-white"
+                                : "bg-border text-text-primary hover:bg-border-dark"
                             }`}
                           >
                             {page}
@@ -294,8 +290,8 @@ const UserList = () => {
                       disabled={currentPage === totalPages}
                       className={`px-4 py-2 rounded-lg font-semibold transition-colors text-sm ${
                         currentPage === totalPages
-                          ? "bg-border text-gray-400 cursor-not-allowed"
-                          : "bg-blue-500 hover:bg-blue-600 text-white"
+                          ? "bg-border text-text-subtle cursor-not-allowed"
+                          : "bg-primary-light hover:bg-primary text-white"
                       }`}
                     >
                       Next

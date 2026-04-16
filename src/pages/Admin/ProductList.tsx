@@ -139,7 +139,7 @@ const ProductList = () => {
       <div className="max-w-6xl mx-auto">
         <div className="mt-8">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-4xl font-bold text-text-primary mb-2">
               Create New Product
             </h1>
             <p className="text-text-secondary">
@@ -179,7 +179,7 @@ const ProductList = () => {
                       d="M12 4v16m8-8H4"
                     />
                   </svg>
-                  <span className="text-gray-900 font-bold text-lg">
+                  <span className="text-text-primary font-bold text-lg">
                     {uploading ? "Uploading..." : "Upload Product Images"}
                   </span>
                   <span className="text-text-secondary text-sm mt-1">
@@ -203,7 +203,7 @@ const ProductList = () => {
                 <div>
                   <label
                     htmlFor="name"
-                    className="block text-gray-900 font-semibold mb-2"
+                    className="block text-text-primary font-semibold mb-2"
                   >
                     Product Name *
                   </label>
@@ -213,14 +213,14 @@ const ProductList = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border-dark rounded-xl bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                     placeholder="Enter product name"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="price"
-                    className="block text-gray-900 font-semibold mb-2"
+                    className="block text-text-primary font-semibold mb-2"
                   >
                     Price * ($)
                   </label>
@@ -231,7 +231,7 @@ const ProductList = () => {
                     onChange={handleInputChange}
                     required
                     step="0.01"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border-dark rounded-xl bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                     placeholder="0.00"
                   />
                 </div>
@@ -241,7 +241,7 @@ const ProductList = () => {
                 <div>
                   <label
                     htmlFor="brand"
-                    className="block text-gray-900 font-semibold mb-2"
+                    className="block text-text-primary font-semibold mb-2"
                   >
                     Brand
                   </label>
@@ -250,7 +250,7 @@ const ProductList = () => {
                     name="brand"
                     value={formData.brand}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border-dark rounded-xl bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                     placeholder="Enter brand name"
                   />
                 </div>
@@ -259,7 +259,7 @@ const ProductList = () => {
               <div>
                 <label
                   htmlFor="description"
-                  className="block text-gray-900 font-semibold mb-2"
+                  className="block text-text-primary font-semibold mb-2"
                 >
                   Description
                 </label>
@@ -268,7 +268,7 @@ const ProductList = () => {
                   value={formData.description}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-border-dark rounded-xl bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                   placeholder="Describe your product..."
                 />
               </div>
@@ -277,7 +277,7 @@ const ProductList = () => {
                 <div>
                   <label
                     htmlFor="countInStock"
-                    className="block text-gray-900 font-semibold mb-2"
+                    className="block text-text-primary font-semibold mb-2"
                   >
                     Stock Count
                   </label>
@@ -286,7 +286,7 @@ const ProductList = () => {
                     name="countInStock"
                     value={formData.countInStock}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border-dark rounded-xl bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                     placeholder="0"
                   />
                 </div>
@@ -294,7 +294,7 @@ const ProductList = () => {
                 <div>
                   <label
                     htmlFor="category"
-                    className="block text-gray-900 font-semibold mb-2"
+                    className="block text-text-primary font-semibold mb-2"
                   >
                     Category *
                   </label>
@@ -303,7 +303,7 @@ const ProductList = () => {
                     value={formData.category}
                     onChange={() => handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border-dark rounded-xl bg-white text-text-primary focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                   >
                     <option value="">Select a category</option>
                     {categories?.map((c) => (

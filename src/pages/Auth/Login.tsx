@@ -38,7 +38,7 @@ const Login = () => {
     <div className="min-h-[calc(100vh-4rem)] bg-slate-50 flex">
       <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-6 py-16">
         <div className="flex items-center gap-2.5 mb-10 lg:hidden">
-          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shadow-md">
+          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-md">
             <svg width="17" height="17" viewBox="0 0 18 18" fill="none">
               <path
                 d="M3 5h12M3 9h8M3 13h10"
@@ -48,14 +48,14 @@ const Login = () => {
               />
             </svg>
           </div>
-          <span className="text-gray-900 font-bold text-xl tracking-tight">
+          <span className="text-text-primary font-bold text-xl tracking-tight">
             ShopNova
           </span>
         </div>
 
         <div className="w-full max-w-[400px]">
           <div className="mb-8">
-            <h1 className="text-[28px] font-bold text-gray-900 tracking-tight mb-1.5">
+            <h1 className="text-[28px] font-bold text-text-primary tracking-tight mb-1.5">
               Welcome back
             </h1>
             <p className="text-text-secondary text-sm">
@@ -76,8 +76,8 @@ const Login = () => {
                   type="email"
                   id="email"
                   className="w-full bg-surface-muted border border-border rounded-xl px-4 py-3.5
-                    text-gray-900 text-sm placeholder:text-gray-400
-                    focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white
+                    text-text-primary text-sm placeholder:text-text-subtle
+                    focus:outline-none focus:border-primary-light focus:ring-2 focus:ring-primary-light/10 focus:bg-white
                     transition-all duration-200"
                   placeholder="you@example.com"
                   value={email}
@@ -96,7 +96,7 @@ const Login = () => {
                   </label>
                   <button
                     type="button"
-                    className="text-xs text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+                    className="text-xs text-primary hover:text-primary font-semibold transition-colors"
                   >
                     Forgot password?
                   </button>
@@ -106,8 +106,8 @@ const Login = () => {
                     type={showPassword ? "text" : "password"}
                     id="password"
                     className="w-full bg-surface-muted border border-border rounded-xl px-4 py-3.5 pr-12
-                      text-gray-900 text-sm placeholder:text-gray-400
-                      focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white
+                      text-text-primary text-sm placeholder:text-text-subtle
+                      focus:outline-none focus:border-primary-light focus:ring-2 focus:ring-primary-light/10 focus:bg-white
                       transition-all duration-200"
                     placeholder="••••••••"
                     value={password}
@@ -117,7 +117,7 @@ const Login = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-text-secondary transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-text-subtle hover:text-text-secondary transition-colors"
                     aria-label={
                       showPassword ? "Hide password" : "Show password"
                     }
@@ -153,7 +153,7 @@ const Login = () => {
               <button
                 disabled={isLoading}
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98]
+                className="w-full bg-primary hover:bg-primary active:scale-[0.98]
                   text-white font-semibold py-3.5 px-4 rounded-xl text-sm
                   transition-all duration-200 hover:shadow-[0_6px_20px_rgba(37,99,235,0.35)]
                   disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none
@@ -175,7 +175,7 @@ const Login = () => {
             Don&apos;t have an account?{" "}
             <Link
               to={redirect ? `/register?redirect=${redirect}` : "/register"}
-              className="text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+              className="text-primary hover:text-primary font-semibold transition-colors"
             >
               Create one free
             </Link>
@@ -189,19 +189,19 @@ const Login = () => {
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              className="text-gray-400"
+              className="text-text-subtle"
             >
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0110 0v4" />
             </svg>
-            <span className="text-gray-400 text-xs tracking-widest uppercase">
+            <span className="text-text-subtle text-xs tracking-widest uppercase">
               256-bit SSL encrypted
             </span>
           </div>
         </div>
       </div>
 
-      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-14 overflow-hidden bg-blue-600">
+      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-14 overflow-hidden bg-primary">
         <div
           className="absolute inset-0 pointer-events-none opacity-10"
           style={{
@@ -251,7 +251,7 @@ const Login = () => {
             <br />
             is waiting.
           </h2>
-          <p className="text-blue-100 text-base leading-relaxed max-w-[280px]">
+          <p className="text-primary-subtle text-base leading-relaxed max-w-[280px]">
             Sign in to pick up where you left off — orders, saved items, and
             exclusive deals.
           </p>
@@ -266,7 +266,7 @@ const Login = () => {
                 <p className="text-white font-bold text-[22px] leading-none">
                   {value}
                 </p>
-                <p className="text-blue-200 text-xs mt-1.5 tracking-wide uppercase">
+                <p className="text-primary-subtle text-xs mt-1.5 tracking-wide uppercase">
                   {label}
                 </p>
               </div>
@@ -275,11 +275,13 @@ const Login = () => {
         </div>
 
         <div className="relative z-10 border-l-2 border-white/30 pl-4">
-          <p className="text-blue-100 text-sm italic leading-relaxed">
+          <p className="text-primary-subtle text-sm italic leading-relaxed">
             &quot;Fastest checkout I&apos;ve ever used. Orders arrive next
             day.&quot;
           </p>
-          <p className="text-blue-200/60 text-xs mt-2">— Verified customer</p>
+          <p className="text-primary-subtle/60 text-xs mt-2">
+            — Verified customer
+          </p>
         </div>
       </div>
     </div>

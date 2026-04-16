@@ -20,7 +20,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
       {/* Modal Content */}
       <div className="relative bg-white p-4 rounded-lg z-10 w-[90%] max-w-md">
         <button
-          className="absolute top-2 right-2 text-black font-semibold hover:text-gray-700 focus:outline-none"
+          className="absolute top-2 right-2 text-black font-semibold hover:text-text-secondary focus:outline-none"
           onClick={onClose}
         >
           ✕

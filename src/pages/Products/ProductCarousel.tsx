@@ -58,7 +58,7 @@ const ProductCarousel = () => {
             } = product;
             return (
               <div key={_id}>
-                <div className="w-full h-80 bg-gray-200 overflow-hidden relative">
+                <div className="w-full h-80 bg-border overflow-hidden relative">
                   <BlurImage
                     src={getPrimaryImage(images)}
                     alt={name}
@@ -70,12 +70,12 @@ const ProductCarousel = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-4">
                       <Link to={`/product/${_id}`} className="group">
-                        <h2 className="text-2xl font-bold text-text-primary group-hover:text-blue-600 transition mb-2">
+                        <h2 className="text-2xl font-bold text-text-primary group-hover:text-primary transition mb-2">
                           {name}
                         </h2>
                       </Link>
 
-                      <p className="text-3xl font-bold text-blue-600">
+                      <p className="text-3xl font-bold text-primary">
                         ${price}
                       </p>
 
@@ -85,7 +85,7 @@ const ProductCarousel = () => {
 
                       <Link
                         to={`/product/${_id}`}
-                        className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+                        className="inline-block bg-primary text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary transition"
                       >
                         View Details
                       </Link>
@@ -95,14 +95,14 @@ const ProductCarousel = () => {
                       <div className="space-y-4">
                         <div className="flex items-start gap-3">
                           <FaStore
-                            className="text-blue-600 mt-1 flex-shrink-0"
+                            className="text-primary mt-1 flex-shrink-0"
                             size={18}
                           />
                         </div>
 
                         <div className="flex items-start gap-3">
                           <FaClock
-                            className="text-blue-600 mt-1 flex-shrink-0"
+                            className="text-primary mt-1 flex-shrink-0"
                             size={18}
                           />
                           <div>
@@ -121,7 +121,7 @@ const ProductCarousel = () => {
 
                         <div className="flex items-start gap-3">
                           <FaBox
-                            className="text-green-600 mt-1 flex-shrink-0"
+                            className="text-amber mt-1 flex-shrink-0"
                             size={18}
                           />
                           <div>
@@ -136,9 +136,9 @@ const ProductCarousel = () => {
                       </div>
 
                       <div className="col-span-2">
-                        <div className="flex items-start gap-3 bg-blue-50 p-3 rounded-lg">
+                        <div className="flex items-start gap-3 bg-primary-subtle p-3 rounded-lg">
                           <FaStar
-                            className="text-blue-600 mt-1 flex-shrink-0"
+                            className="text-primary mt-1 flex-shrink-0"
                             size={18}
                           />
                           <div>

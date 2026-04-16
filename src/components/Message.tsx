@@ -7,13 +7,13 @@ const Message = ({ variant, children }: MessageProps) => {
   const getVariantClass = () => {
     switch (variant) {
       case "success":
-        return "bg-green-100 text-green-800";
+        return "bg-amber-light text-amber-dark";
       case "error":
-        return "bg-red-100 text-red-800";
+        return "bg-danger-subtle text-danger-dark";
       case "danger":
-        return "bg-red-100 text-red-800";
+        return "bg-danger-subtle text-danger-dark";
       default:
-        return "bg-blue-100 text-blue-800";
+        return "bg-primary-subtle text-primary-dark";
     }
   };
 

@@ -48,7 +48,7 @@ const Profile = () => {
 
   const dispatch = useDispatch();
 
-  const submitHandler = async (e:FormEvent) => {
+  const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
@@ -65,7 +65,7 @@ const Profile = () => {
         const res = await updateProfile(updateData).unwrap();
         dispatch(setCredentials({ ...res }));
         toast.success("Profile updated successfully");
-      } catch (err:any) {
+      } catch (err: any) {
         toast.error(err?.data?.message || err.error);
       }
     }
@@ -75,11 +75,11 @@ const Profile = () => {
     <div className="min-h-screen bg-surface-muted">
       <div className=" max-w-7xl mx-auto px-4 lg:flex gap-8">
         <div className="flex items-center gap-4 mb-4">
-          <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+          <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white text-2xl font-bold">
             {userInfo?.username?.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-text-primary">
               {userInfo?.username}
             </h3>
             <p className="text-sm text-text-secondary">{userInfo?.email}</p>
@@ -92,7 +92,7 @@ const Profile = () => {
           <p className="text-xs text-text-secondary uppercase font-semibold mb-2">
             Account Status
           </p>
-          <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">
+          <span className="inline-block bg-amber-light text-amber-dark text-xs font-semibold px-3 py-1 rounded-full">
             Active
           </span>
           {userInfo?.isAdmin && (
@@ -155,7 +155,7 @@ const Profile = () => {
                 </p>
                 <Link
                   to="/shop"
-                  className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                  className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary transition"
                 >
                   Continue Shopping
                 </Link>
@@ -176,46 +176,46 @@ const Profile = () => {
           <div className="max-w-7xl mx-auto px-4 pb-12">
             <div className="">
               <div className="bg-white rounded-lg shadow-sm p-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-8">
+                <h2 className="text-2xl font-semibold text-text-primary mb-8">
                   Update Profile
                 </h2>
 
                 <form onSubmit={submitHandler} className="space-y-6">
                   <div className="grid lg:grid-cols-2 grid-cols-1 gap-8">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-sm font-semibold text-text-secondary mb-2">
                         Username *
                       </label>
                       <input
                         type="text"
                         placeholder="Enter your username"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                        className="w-full px-4 py-3 border border-border-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-light transition"
                         value={username}
                         onChange={(e) => setUserName(e.target.value)}
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-sm font-semibold text-text-secondary mb-2">
                         Email Address *
                       </label>
                       <input
                         type="email"
                         placeholder="Enter your email"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                        className="w-full px-4 py-3 border border-border-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-light transition"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-sm font-semibold text-text-secondary mb-2">
                         New Password
                       </label>
                       <input
                         type="password"
                         placeholder="Enter new password (optional)"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                        className="w-full px-4 py-3 border border-border-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-light transition"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                       />
@@ -225,13 +225,13 @@ const Profile = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-sm font-semibold text-text-secondary mb-2">
                         Confirm Password
                       </label>
                       <input
                         type="password"
                         placeholder="Confirm new password"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                        className="w-full px-4 py-3 border border-border-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-light transition"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
@@ -242,7 +242,7 @@ const Profile = () => {
                     <button
                       type="submit"
                       disabled={loadingUpdateProfile}
-                      className=" bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className=" bg-primary hover:bg-primary text-white font-semibold py-3 px-4 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {loadingUpdateProfile ? (
                         <>

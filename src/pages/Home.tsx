@@ -49,14 +49,14 @@ const Home = () => {
         ) : (
           <div className="max-w-7xl mx-auto px-4 py-12">
             {isFetching && (
-              <p className="text-sm text-gray-400 mb-4 animate-pulse">
+              <p className="text-sm text-text-subtle mb-4 animate-pulse">
                 Updating products...
               </p>
             )}
 
             <div className="flex justify-between items-center mb-12">
               <div>
-                <h1 className="md:text-4xl text-2xl font-bold text-gray-900 mb-2">
+                <h1 className="md:text-4xl text-2xl font-bold text-text-primary mb-2">
                   Special Products
                 </h1>
                 <p className="text-text-secondary">
@@ -66,7 +66,7 @@ const Home = () => {
 
               <Link
                 to="/shop"
-                className="bg-blue-600 hover:bg-blue-700 w-fit text-white text-sm font-semibold md:py-3 md:px-8 p-2 rounded-lg transition duration-300 flex items-center gap-2 whitespace-pre"
+                className="bg-primary hover:bg-primary w-fit text-white text-sm font-semibold md:py-3 md:px-8 p-2 rounded-lg transition duration-300 flex items-center gap-2 whitespace-pre"
               >
                 Browse All
                 <span className="text-xl">→</span>
@@ -76,7 +76,7 @@ const Home = () => {
             <div className="mb-8">
               <p className="text-text-secondary">
                 Showing{" "}
-                <span className="font-bold text-blue-600">
+                <span className="font-bold text-primary">
                   {data?.products?.length || 0}
                 </span>{" "}
                 products
@@ -98,7 +98,7 @@ const Home = () => {
                 </p>
                 <Link
                   to="/shop"
-                  className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                  className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary transition"
                 >
                   Go to Shop
                 </Link>

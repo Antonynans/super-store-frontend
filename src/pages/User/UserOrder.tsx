@@ -30,9 +30,9 @@ const UserOrder = () => {
         ) : orders && orders.length === 0 ? (
           <div className="text-center py-16">
             <div className="mb-8">
-              <FaClipboardList className="mx-auto h-24 w-24 text-gray-300" />
+              <FaClipboardList className="mx-auto h-24 w-24 text-border-dark" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl font-bold text-text-primary mb-2">
               No orders yet
             </h2>
             <p className="text-text-secondary mb-8">
@@ -40,7 +40,7 @@ const UserOrder = () => {
             </p>
             <Link
               to="/shop"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
+              className="inline-block bg-primary hover:bg-primary text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
             >
               Browse Products
             </Link>
@@ -50,7 +50,7 @@ const UserOrder = () => {
             <div className="mb-6">
               <p className="text-text-secondary">
                 You have{" "}
-                <span className="font-bold text-blue-600">
+                <span className="font-bold text-primary">
                   {orders?.length || 0}
                 </span>{" "}
                 order{orders?.length !== 1 ? "s" : ""}
@@ -77,13 +77,13 @@ const UserOrder = () => {
                         <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-2">
                           Order ID
                         </h3>
-                        <p className="text-gray-900 font-mono text-sm break-all">
+                        <p className="text-text-primary font-mono text-sm break-all">
                           {order._id}
                         </p>
                         <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mt-4 mb-2">
                           Order Date
                         </h3>
-                        <p className="text-gray-900">
+                        <p className="text-text-primary">
                           {new Date(order.createdAt).toLocaleDateString()}
                         </p>
                       </div>
@@ -92,14 +92,15 @@ const UserOrder = () => {
                         <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-2">
                           Total Amount
                         </h3>
-                        <p className=" font-bold text-blue-600 mb-4">
-                          ${parseFloat(String(order.totalPrice || 0)).toFixed(2)}
+                        <p className=" font-bold text-primary mb-4">
+                          $
+                          {parseFloat(String(order.totalPrice || 0)).toFixed(2)}
                         </p>
 
                         <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-2">
                           Items
                         </h3>
-                        <p className="text-blue-600">
+                        <p className="text-primary">
                           {order.orderItems?.length || 0}{" "}
                           {order.orderItems?.length === 1 ? "item" : "items"}
                         </p>
@@ -118,15 +119,15 @@ const UserOrder = () => {
                             <div className="flex items-center gap-2">
                               {order.isPaid ? (
                                 <>
-                                  <FaCheckCircle className="text-green-500" />
-                                  <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">
+                                  <FaCheckCircle className="text-amber" />
+                                  <span className="inline-block bg-amber-light text-amber-dark text-xs font-semibold px-3 py-1 rounded-full">
                                     Paid
                                   </span>
                                 </>
                               ) : (
                                 <>
-                                  <FaClock className="text-yellow-500" />
-                                  <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full">
+                                  <FaClock className="text-accent-subtle0" />
+                                  <span className="inline-block bg-accent-subtle text-accent-dark text-xs font-semibold px-3 py-1 rounded-full">
                                     Pending
                                   </span>
                                 </>
@@ -141,15 +142,15 @@ const UserOrder = () => {
                             <div className="flex items-center gap-2">
                               {order.isDelivered ? (
                                 <>
-                                  <FaCheckCircle className="text-green-500" />
-                                  <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">
+                                  <FaCheckCircle className="text-amber" />
+                                  <span className="inline-block bg-amber-light text-amber-dark text-xs font-semibold px-3 py-1 rounded-full">
                                     Delivered
                                   </span>
                                 </>
                               ) : (
                                 <>
-                                  <FaClock className="text-yellow-500" />
-                                  <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full">
+                                  <FaClock className="text-accent-subtle0" />
+                                  <span className="inline-block bg-accent-subtle text-accent-dark text-xs font-semibold px-3 py-1 rounded-full">
                                     In Transit
                                   </span>
                                 </>
@@ -160,7 +161,7 @@ const UserOrder = () => {
                       </div>
                       <div className="flex items-center">
                         <Link to={`/order/${order._id}`}>
-                          <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300">
+                          <button className="bg-primary hover:bg-primary text-white font-semibold py-2 px-6 rounded-lg transition duration-300">
                             View
                           </button>
                         </Link>
@@ -175,7 +176,7 @@ const UserOrder = () => {
               <div className="mt-8 flex justify-center">
                 <button
                   onClick={() => setDisplayCount((prev) => prev + 5)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
+                  className="bg-primary hover:bg-primary text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
                 >
                   Load More Orders
                 </button>

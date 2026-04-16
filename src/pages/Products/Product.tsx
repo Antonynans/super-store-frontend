@@ -18,10 +18,10 @@ const Product = ({ product }: { product: ProductType }) => {
       <div className="p-4">
         <Link to={`/product/${product._id}`}>
           <h2 className="flex justify-between items-center gap-2">
-            <div className="text-lg font-medium text-gray-900 truncate">
+            <div className="text-lg font-medium text-text-primary truncate">
               {product.name}
             </div>
-            <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full whitespace-nowrap">
+            <span className="bg-primary-subtle text-primary-dark text-sm font-medium px-2.5 py-0.5 rounded-full whitespace-nowrap">
               ${product.price}
             </span>
           </h2>

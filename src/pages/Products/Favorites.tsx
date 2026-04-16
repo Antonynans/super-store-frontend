@@ -17,13 +17,13 @@ const Favorites = () => {
     return (
       <div className="min-h-screen bg-surface-muted flex items-center justify-center">
         <div className="text-center">
-          <FaHeart className="mx-auto h-24 w-24 text-gray-300 mb-6" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          <FaHeart className="mx-auto h-24 w-24 text-border-dark mb-6" />
+          <h1 className="text-2xl font-bold text-text-primary mb-4">
             Please log in to view your favorites
           </h1>
           <Link
             to="/login"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
+            className="inline-block bg-primary hover:bg-primary text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
           >
             Go to Login
           </Link>
@@ -40,14 +40,16 @@ const Favorites = () => {
         <div className="max-w-7xl mx-auto px-4 py-12">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium mb-4 transition-colors"
+            className="flex items-center gap-2 text-primary hover:text-primary font-medium mb-4 transition-colors"
           >
             <FaArrowLeft size={18} />
             Back
           </button>
           <div className="flex items-center gap-3 mb-2">
-            <FaHeart className="text-red-500 text-3xl" />
-            <h1 className="text-4xl font-bold text-gray-900">My Favorites</h1>
+            <FaHeart className="text-danger text-3xl" />
+            <h1 className="text-4xl font-bold text-text-primary">
+              My Favorites
+            </h1>
           </div>
           <p className="text-text-secondary">
             {products.length === 0
@@ -63,9 +65,9 @@ const Favorites = () => {
         {products.length === 0 ? (
           <div className="text-center py-16">
             <div className="mb-8">
-              <FaHeart className="mx-auto h-24 w-24 text-gray-300" />
+              <FaHeart className="mx-auto h-24 w-24 text-border-dark" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl font-bold text-text-primary mb-2">
               No favorites yet
             </h2>
             <p className="text-text-secondary mb-8">
@@ -73,7 +75,7 @@ const Favorites = () => {
             </p>
             <Link
               to="/shop"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
+              className="inline-block bg-primary hover:bg-primary text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
             >
               Browse Products
             </Link>
@@ -83,7 +85,7 @@ const Favorites = () => {
             <div className="mb-6">
               <p className="text-text-secondary">
                 Showing{" "}
-                <span className="font-bold text-blue-600">
+                <span className="font-bold text-primary">
                   {products.length}
                 </span>{" "}
                 favorite {products.length === 1 ? "product" : "products"}

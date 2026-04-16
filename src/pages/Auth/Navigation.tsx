@@ -85,22 +85,22 @@ const Navigation = () => {
   const desktopLinkClass = ({ isActive }: { isActive: boolean }) =>
     `relative flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
       isActive
-        ? "text-primary bg-blue-50 font-semibold"
+        ? "text-primary bg-primary-subtle font-semibold"
         : "text-text-secondary hover:text-primary hover:bg-surface-muted"
     }`;
 
   const mobileLinkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
       isActive
-        ? "bg-blue-50 text-primary font-semibold"
+        ? "bg-primary-subtle text-primary font-semibold"
         : "text-text-secondary hover:bg-surface-muted"
     }`;
 
   const dropdownLinkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-4 py-2 text-sm transition-colors ${
       isActive
-        ? "bg-blue-50 text-primary font-semibold"
-        : "text-gray-700 hover:bg-surface-muted"
+        ? "bg-primary-subtle text-primary font-semibold"
+        : "text-text-secondary hover:bg-surface-muted"
     }`;
 
   return (
@@ -111,7 +111,7 @@ const Navigation = () => {
             to="/"
             className="flex items-center gap-2.5 flex-shrink-0 group"
           >
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm group-hover:bg-blue-700 transition-colors duration-200">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm group-hover:bg-primary transition-colors duration-200">
               <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
                 <path
                   d="M3 5h12M3 9h8M3 13h10"
@@ -166,18 +166,18 @@ const Navigation = () => {
                     onClick={() => setDropdownOpen((o) => !o)}
                     className={`flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl border transition-all duration-200 ${
                       dropdownOpen
-                        ? "border-blue-300 bg-blue-50"
-                        : "border-border hover:border-blue-200 hover:bg-surface-muted"
+                        ? "border-primary-light bg-primary-subtle"
+                        : "border-border hover:border-primary-subtle hover:bg-surface-muted"
                     }`}
                   >
                     <div className="w-7 h-7 bg-primary rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                       {userInfo.username?.charAt(0).toUpperCase()}
                     </div>
-                    <span className="text-gray-700 text-sm font-medium max-w-[90px] truncate">
+                    <span className="text-text-secondary text-sm font-medium max-w-[90px] truncate">
                       {userInfo.username}
                     </span>
                     <svg
-                      className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
+                      className={`w-3.5 h-3.5 text-text-subtle transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -196,9 +196,9 @@ const Navigation = () => {
                       <Link
                         to="/profile"
                         onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-surface-muted transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-secondary hover:bg-surface-muted transition-colors"
                       >
-                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="w-6 h-6 bg-primary-subtle rounded-full flex items-center justify-center flex-shrink-0">
                           <FaUser size={11} className="text-primary" />
                         </div>
                         <span className="font-medium">My Profile</span>
@@ -207,7 +207,7 @@ const Navigation = () => {
                       {userInfo.isAdmin && (
                         <>
                           <div className="mx-3 my-1 border-t border-border" />
-                          <p className="px-4 pt-1.5 pb-1 text-[10px] font-bold text-gray-400 tracking-widest uppercase">
+                          <p className="px-4 pt-1.5 pb-1 text-[10px] font-bold text-text-subtle tracking-widest uppercase">
                             Admin
                           </p>
                           {adminMenuItems.map(({ to, label, icon: Icon }) => (
@@ -227,7 +227,7 @@ const Navigation = () => {
                       <div className="mx-3 my-1 border-t border-border" />
                       <button
                         onClick={logoutHandler}
-                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
+                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium text-danger hover:bg-danger-subtle transition-colors"
                       >
                         <FaSignOutAlt size={13} className="flex-shrink-0" />
                         Logout
@@ -243,7 +243,7 @@ const Navigation = () => {
                   </NavLink>
                   <NavLink
                     to="/register"
-                    className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-[0_4px_14px_rgba(37,99,235,0.3)]"
+                    className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-[0_4px_14px_rgba(37,99,235,0.3)]"
                   >
                     <AiOutlineUserAdd size={18} />
                     <span>Register</span>
@@ -264,7 +264,7 @@ const Navigation = () => {
             </NavLink>
             <button
               onClick={() => setMobileMenuOpen((o) => !o)}
-              className="p-2 rounded-lg text-text-secondary hover:text-primary hover:bg-blue-50 transition-colors"
+              className="p-2 rounded-lg text-text-secondary hover:text-primary hover:bg-primary-subtle transition-colors"
               aria-label="Toggle navigation"
             >
               {mobileMenuOpen ? (
@@ -339,7 +339,7 @@ const Navigation = () => {
 
               {userInfo.isAdmin && (
                 <>
-                  <p className="px-4 pt-2 pb-1 text-[10px] font-bold text-gray-400 tracking-widest uppercase">
+                  <p className="px-4 pt-2 pb-1 text-[10px] font-bold text-text-subtle tracking-widest uppercase">
                     Admin
                   </p>
                   {adminMenuItems.map(({ to, label, icon: Icon }) => (
@@ -365,7 +365,7 @@ const Navigation = () => {
                   logoutHandler();
                   setMobileMenuOpen(false);
                 }}
-                className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
+                className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm font-medium text-danger hover:bg-danger-subtle transition-colors"
               >
                 <FaSignOutAlt size={16} />
                 <span>Logout</span>

@@ -10,10 +10,21 @@ export default {
           dark: "#1d4ed8",
           subtle: "#eff6ff",
         },
-
+        amber: {
+          default: "#22c55e",
+          light: "#dcfce7",
+          dark: "#66534",
+        },
+        danger: {
+          DEFAULT: "#ef4444",
+          light: "#b91c1c",
+          dark: "#991b1b",
+          subtle: "#fef2f2",
+        },
         accent: {
-          DEFAULT: "#ec4899",
-          dark: "#db2777",
+          DEFAULT: "#facc15",
+          dark: "#713f12",
+          subtle: "#fefce8"
         },
 
         surface: {

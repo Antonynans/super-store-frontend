@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useGetFilteredProductsQuery } from "../redux/api/productApiSlice";
 import { useFetchCategoriesQuery } from "../redux/api/categoryApiSlice";
 import { FiSliders, FiX, FiSearch } from "react-icons/fi";
+import { IoIosArrowBack } from "react-icons/io";
 import {
   setCategories,
   setProducts,
@@ -14,6 +15,7 @@ import { lazy, Suspense } from "react";
 import Select from "react-select";
 import { useDebounce } from "../hook/useDebounce";
 import { Product } from "../types";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 
 const ProductCard = lazy(() => import("./Products/ProductCard"));
 
@@ -27,6 +29,10 @@ const Shop = () => {
     checked: string[];
     radio: string | string[];
   };
+
+  const [searchParams] = useSearchParams();
+  const category = searchParams.get("category");
+  const navigate = useNavigate();
 
   const categoriesQuery = useFetchCategoriesQuery();
   const [priceRange, setPriceRange] = useState({
@@ -54,6 +60,17 @@ const Shop = () => {
   }, [categoriesQuery.data, categoriesQuery.isLoading, dispatch]);
 
   useEffect(() => {
+    if (category && categories.length > 0) {
+      const foundCategory = categories.find(
+        (c) => c.name.toLowerCase() === category.toLowerCase(),
+      );
+      if (foundCategory) {
+        dispatch(setChecked([foundCategory._id]));
+      }
+    }
+  }, [category, categories, dispatch]);
+
+  useEffect(() => {
     if (!filteredProductsQuery.isLoading && filteredProductsQuery.data) {
       let filtered = [...(filteredProductsQuery.data || [])];
 
@@ -69,7 +86,7 @@ const Shop = () => {
         filtered = filtered.filter((product) => {
           return (
             product.name?.toLowerCase().includes(query) ||
-            product.description?.toLowerCase().includes(query) 
+            product.description?.toLowerCase().includes(query)
             // product.brand?.toLowerCase().includes(query)
           );
         });
@@ -133,9 +150,38 @@ const Shop = () => {
     <>
       <div className="min-h-screen bg-surface-muted">
         <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Breadcrumb Nav */}
+          <div className="mb-6">
+            <nav className="flex items-center gap-0 text-sm flex-wrap">
+              <button
+                onClick={() => navigate(-1)}
+                className="flex items-center gap-1.5 text-primary font-medium hover:text-primary-dark transition-colors duration-200 mr-3"
+              >
+                <IoIosArrowBack size={12} />
+              </button>
+
+              <Link
+                to="/"
+                className="text-primary hover:text-primary-dark font-medium transition-colors duration-200"
+              >
+                Home
+              </Link>
+
+              <span className="mx-2 text-text-subtle select-none">|</span>
+
+              <span className="text-text-primary-secondary font-medium">
+                {category
+                  ? `${category.charAt(0).toUpperCase() + category.slice(1)} Products`
+                  : "Shop"}
+              </span>
+            </nav>
+          </div>
+
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-text-primary mb-2">
-              Shop Products
+              {category
+                ? `${category.charAt(0).toUpperCase() + category.slice(1)} Products`
+                : "Shop Products"}
             </h1>
             <p className="text-text-secondary">
               Showing{" "}

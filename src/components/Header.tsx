@@ -15,11 +15,11 @@ const Header = () => {
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-          <h2 className="text-2xl font-bold text-red-800 mb-2">
+        <div className="bg-danger-subtle border border-danger-subtle rounded-lg p-6 text-center">
+          <h2 className="text-2xl font-bold text-danger-dark mb-2">
             Oops! Something went wrong
           </h2>
-          <p className="text-red-600">
+          <p className="text-danger-light">
             Failed to load featured products. Please try again later.
           </p>
         </div>
@@ -44,7 +44,7 @@ const Header = () => {
               <div className="flex gap-4 pt-4">
                 <Link
                   to="/shop"
-                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition"
+                  className="inline-flex items-center gap-2 bg-primary hover:bg-primary text-white px-8 py-3 rounded-lg font-bold transition"
                 >
                   Shop Now <FaArrowRight size={18} />
                 </Link>
@@ -62,8 +62,8 @@ const Header = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="mb-12">
             <div className="flex items-center gap-2 justify-center">
-              <div className=" bg-yellow-400 text-yellow-900 rounded-full p-3 shadow-lg border-2 border-white">
-                <FaStar size={20} className="fill-yellow-900" />
+              <div className=" bg-accent text-accent-dark rounded-full p-3 shadow-lg border-2 border-white">
+                <FaStar size={20} className="fill-accent-dark" />
               </div>
               <h2 className="text-4xl font-bold text-center text-text-primary">
                 Top Rated This Month
@@ -96,7 +96,7 @@ const Header = () => {
 
       <div className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="mt-20 pt-20 border-t border-blue-400 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="mt-20 pt-20 border-t border-primary-light grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
                 icon: "🚚",

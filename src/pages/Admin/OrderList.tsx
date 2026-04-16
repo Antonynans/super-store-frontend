@@ -52,7 +52,7 @@ const OrderList = () => {
         <div className="w-full">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-border text-gray-900">
+              <thead className="bg-border text-text-primary">
                 <tr>
                   <th className="px-4 py-4 text-left text-sm font-semibold">
                     IMAGE
@@ -98,19 +98,19 @@ const OrderList = () => {
                         )}
                       </td>
                       <td className="px-4 py-4">
-                        <span className="text-sm font-mono text-gray-700">
+                        <span className="text-sm font-mono text-text-secondary">
                           {order._id.substring(0, 8)}...
                         </span>
                       </td>
 
                       <td className="px-4 py-4">
-                        <span className="text-sm text-gray-700">
+                        <span className="text-sm text-text-secondary">
                           {order?.user?.username}
                         </span>
                       </td>
 
                       <td className="px-4 py-4">
-                        <span className="text-sm text-gray-700">
+                        <span className="text-sm text-text-secondary">
                           {order.createdAt
                             ? new Date(order.createdAt).toLocaleDateString()
                             : "N/A"}
@@ -128,11 +128,11 @@ const OrderList = () => {
 
                       <td className="px-4 py-4 text-center">
                         {order.isPaid ? (
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 border border-green-500/30">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber/20 text-amber border border-amber/30">
                             ✓ Completed
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 border border-red-500/30">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-danger/20 text-danger border border-danger/30">
                             ⊘ Pending
                           </span>
                         )}
@@ -140,11 +140,11 @@ const OrderList = () => {
 
                       <td className="px-4 py-4 text-center">
                         {order.isDelivered ? (
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 border border-green-500/30">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber/20 text-amber border border-amber/30">
                             ✓ Delivered
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-accent-subtle0/20 text-accent border border-accent-subtle0/30">
                             ⧗ In Transit
                           </span>
                         )}
@@ -175,17 +175,17 @@ const OrderList = () => {
 
           {totalPages > 1 && (
             <div className="flex items-center justify-between p-6 bg-surface-subtle border-t border-border">
-              <div className="text-sm text-gray-700">
+              <div className="text-sm text-text-secondary">
                 Page{" "}
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-text-primary">
                   {currentPage}
                 </span>{" "}
                 of{" "}
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-text-primary">
                   {totalPages}
                 </span>{" "}
                 • Showing{" "}
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-text-primary">
                   {paginatedOrders.length}
                 </span>{" "}
                 orders
@@ -195,9 +195,9 @@ const OrderList = () => {
                 <button
                   onClick={handlePreviousPage}
                   disabled={currentPage === 1}
-                  className="w-10 h-10 flex items-center justify-center bg-gray-300 hover:bg-gray-400 disabled:bg-border disabled:text-gray-400 text-gray-900 rounded-lg font-semibold transition-colors"
+                  className="w-10 h-10 flex items-center justify-center bg-border-dark hover:bg-text-subtle disabled:bg-border disabled:text-text-subtle text-text-primary rounded-lg font-semibold transition-colors"
                 >
-                  <IoIosArrowBack /> 
+                  <IoIosArrowBack />
                 </button>
 
                 <div className="flex gap-1">
@@ -209,7 +209,7 @@ const OrderList = () => {
                         className={`w-10 h-10 rounded-lg font-semibold transition-colors ${
                           currentPage === page
                             ? "bg-pink-500 text-white"
-                            : "bg-gray-300 hover:bg-gray-400 text-gray-900"
+                            : "bg-border-dark hover:bg-text-subtle text-text-primary"
                         }`}
                       >
                         {page}
@@ -221,9 +221,9 @@ const OrderList = () => {
                 <button
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
-                  className="w-10 h-10 flex items-center justify-center bg-gray-300 hover:bg-gray-400 disabled:bg-border disabled:text-gray-400 text-gray-900 rounded-lg font-semibold transition-colors"
+                  className="w-10 h-10 flex items-center justify-center bg-border-dark hover:bg-text-subtle disabled:bg-border disabled:text-text-subtle text-text-primary rounded-lg font-semibold transition-colors"
                 >
-                   <IoIosArrowForward />
+                  <IoIosArrowForward />
                 </button>
               </div>
             </div>

@@ -33,7 +33,7 @@ const ProductCard = ({ p }: { p: Product }) => {
         </div>
 
         <div className="p-4 flex-1 flex flex-col justify-between">
-          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition">
+          <h3 className="font-semibold text-text-primary mb-2 line-clamp-2 hover:text-primary transition">
             {p?.name}
           </h3>
 
@@ -41,11 +41,11 @@ const ProductCard = ({ p }: { p: Product }) => {
 
           <div className="">
             {p?.countInStock > 0 ? (
-              <span className="text-xs text-green-600 font-semibold">
+              <span className="text-xs text-amber font-semibold">
                 ✓ In Stock
               </span>
             ) : (
-              <span className="text-xs text-red-600 font-semibold">
+              <span className="text-xs text-danger-light font-semibold">
                 Out of Stock
               </span>
             )}
@@ -53,7 +53,7 @@ const ProductCard = ({ p }: { p: Product }) => {
 
           <div className="flex items-center justify-between">
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-bold text-gray-900">
+              <span className="text-xl font-bold text-text-primary">
                 {p?.price?.toLocaleString("en-US", {
                   style: "currency",
                   currency: "USD",
@@ -71,8 +71,8 @@ const ProductCard = ({ p }: { p: Product }) => {
                 disabled={p?.countInStock === 0}
                 className={`w-full rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2 py-2 px-4 ${
                   p?.countInStock === 0
-                    ? "bg-gray-400 text-text-secondary cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                    ? "bg-text-subtle text-text-secondary cursor-not-allowed"
+                    : "bg-primary hover:bg-primary text-white"
                 }`}
               >
                 <AiOutlineShoppingCart size={18} />

@@ -27,12 +27,12 @@ const Cart = () => {
     return (
       <div className="min-h-screen bg-surface-muted flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl font-bold text-text-primary mb-4">
             Please log in to view your cart
           </h1>
           <Link
             to="/login"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
+            className="inline-block bg-primary hover:bg-primary text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
           >
             Go to Login
           </Link>
@@ -45,7 +45,7 @@ const Cart = () => {
     <div className="min-h-screen bg-surface-muted">
       <div className="bg-white border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-4xl font-bold text-text-primary mb-2">
             Shopping Cart
           </h1>
           <p className="text-text-secondary">
@@ -61,7 +61,7 @@ const Cart = () => {
           <div className="text-center py-16">
             <div className="mb-8">
               <svg
-                className="mx-auto h-24 w-24 text-gray-400"
+                className="mx-auto h-24 w-24 text-text-subtle"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -74,7 +74,7 @@ const Cart = () => {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl font-bold text-text-primary mb-2">
               Your cart is empty
             </h2>
             <p className="text-text-secondary mb-8">
@@ -82,7 +82,7 @@ const Cart = () => {
             </p>
             <Link
               to="/shop"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
+              className="inline-block bg-primary hover:bg-primary text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
             >
               Continue Shopping
             </Link>
@@ -92,7 +92,7 @@ const Cart = () => {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-border">
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-xl font-semibold text-text-primary">
                     {cartItems.length}{" "}
                     {cartItems.length === 1 ? "Item" : "Items"} in Cart
                   </h2>
@@ -116,12 +116,12 @@ const Cart = () => {
                         <div className="flex-1 min-w-0">
                           <Link
                             to={`/product/${item.product?._id}`}
-                            className="text-lg font-semibold text-blue-600 hover:text-blue-700 mb-1 block truncate"
+                            className="text-lg font-semibold text-primary hover:text-primary mb-1 block truncate"
                           >
                             {item.name}
                           </Link>
 
-                          <p className="text-2xl font-bold text-gray-900">
+                          <p className="text-2xl font-bold text-text-primary">
                             ${item.price}
                           </p>
                         </div>
@@ -176,7 +176,7 @@ const Cart = () => {
                           </div>
 
                           <button
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition duration-200"
+                            className="text-danger-light hover:text-danger-light hover:bg-danger-subtle p-2 rounded-lg transition duration-200"
                             onClick={() => {
                               removeFromCartHandler(item.product._id);
                             }}
@@ -194,7 +194,7 @@ const Cart = () => {
 
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
-                <h3 className="text-xl font-semibold text-gray-900 mb-6">
+                <h3 className="text-xl font-semibold text-text-primary mb-6">
                   Order Summary
                 </h3>
 
@@ -222,10 +222,10 @@ const Cart = () => {
                     </span>
                   </div>
                   <div className="border-t border-border pt-4 flex justify-between">
-                    <span className="text-lg font-semibold text-gray-900">
+                    <span className="text-lg font-semibold text-text-primary">
                       Total
                     </span>
-                    <span className="text-2xl font-bold text-blue-600">
+                    <span className="text-2xl font-bold text-primary">
                       $
                       {cartItems
                         .reduce(
@@ -239,7 +239,7 @@ const Cart = () => {
                 </div>
 
                 <button
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-300 mb-3"
+                  className="w-full bg-primary hover:bg-primary text-white font-semibold py-3 px-4 rounded-lg transition duration-300 mb-3"
                   disabled={cartItems.length === 0}
                   onClick={checkoutHandler}
                 >
@@ -248,7 +248,7 @@ const Cart = () => {
 
                 <Link
                   to="/shop"
-                  className="w-full block text-center text-blue-600 hover:text-blue-700 font-semibold py-3 px-4 border border-blue-600 rounded-lg transition duration-300"
+                  className="w-full block text-center text-primary hover:text-primary font-semibold py-3 px-4 border border-primary rounded-lg transition duration-300"
                 >
                   Continue Shopping
                 </Link>

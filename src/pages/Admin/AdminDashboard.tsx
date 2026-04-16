@@ -122,7 +122,9 @@ const AdminDashboard = () => {
     <>
       <section className="xl:ml-[4rem] md:ml-[0rem] bg-gradient-to-br from-surface-muted to-surface-subtle min-h-screen p-6">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
+          <h1 className="text-4xl font-bold text-text-primary mb-2">
+            Dashboard
+          </h1>
           <p className="text-text-secondary">
             Welcome back! Here&apos;s your sales overview.
           </p>
@@ -149,7 +151,7 @@ const AdminDashboard = () => {
             <div className="text-white/70 text-sm">Revenue this month</div>
           </div>
 
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow">
+          <div className="bg-gradient-to-br from-primary-light to-primary rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-shadow">
             <div className="flex items-center justify-between mb-4">
               <div className="text-white/80 text-sm font-semibold uppercase tracking-wider">
                 Total Customers
@@ -178,7 +180,7 @@ const AdminDashboard = () => {
 
         <div className="bg-white rounded-2xl p-8 shadow-md mb-8">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-text-primary">
               Sales Performance
             </h2>
             <p className="text-text-secondary text-sm mt-1">
@@ -204,7 +206,9 @@ const AdminDashboard = () => {
 
         <div className="bg-white rounded-2xl shadow-md overflow-hidden">
           <div className="p-8 border-b border-border">
-            <h2 className="text-2xl font-bold text-gray-900">Recent Orders</h2>
+            <h2 className="text-2xl font-bold text-text-primary">
+              Recent Orders
+            </h2>
             <p className="text-text-secondary text-sm mt-1">
               Manage and track all orders
             </p>
