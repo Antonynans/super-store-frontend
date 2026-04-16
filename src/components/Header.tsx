@@ -96,7 +96,7 @@ const Header = () => {
 
       <div className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="mt-20 pt-20 border-t border-primary-light grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="mt-20 pt-20 border-t border-primary-light md:grid md:grid-cols-3 flex gap-8">
             {[
               {
                 icon: "🚚",
