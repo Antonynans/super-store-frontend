@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
 import { AiOutlineShoppingCart } from "react-icons/ai";
-import { useAppSelector } from "../../redux/store";
 import { useAddToCartHandler } from "../../hook/useAddToCartHandler";
-import { toast } from "react-toastify";
 import HeartIcon from "./HeartIcon";
 import Ratings from "./Ratings";
 import { useState } from "react";
@@ -23,9 +21,9 @@ const ProductCard = ({ p }: { p: Product }) => {
         style={{ transform: hovered ? "translateY(-4px)" : "none" }}
       >
         <div className="relative overflow-hidden bg-surface-subtle min-w-[250px] sm:min-w-[280px] md:min-w-[300px]  h-48">
-         <div className="relative w-full aspect-[3/4] bg-surface-subtle rounded-t-lg overflow-hidden">
-  <ProductImage src={getPrimaryImage(p?.images)} alt={p?.name} />
-</div>
+          <div className="relative w-full aspect-[3/4] bg-surface-subtle rounded-t-lg overflow-hidden">
+            <ProductImage src={getPrimaryImage(p?.images)} alt={p?.name} />
+          </div>
 
           <div className="absolute top-3 right-8">
             <HeartIcon product={p} />
@@ -76,7 +74,6 @@ const ProductCard = ({ p }: { p: Product }) => {
                 }`}
               >
                 <AiOutlineShoppingCart size={18} />
-                {/* {p?.countInStock === 0 ? "Out of Stock" : "Add to Cart"} */}
               </button>
             </div>
           </div>
