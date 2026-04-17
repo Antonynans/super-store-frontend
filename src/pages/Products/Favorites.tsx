@@ -6,11 +6,10 @@ import ProductCard from "./ProductCard";
 import { Product } from "../../types";
 import { motion, AnimatePresence } from "framer-motion";
 import WishlistSkeleton from "../../components/skeletons/WishlistSkeleton";
-import { SetStateAction } from "react";
 
 interface FavProps {
-  showHeader: boolean;
-  setShowHeader: (value: boolean) => void;
+  showHeader?: boolean;
+  setShowHeader?: (value: boolean) => void;
 }
 const Favorites = ({ showHeader = true, setShowHeader }: FavProps) => {
   const { userInfo } = useAppSelector((state) => state.auth);

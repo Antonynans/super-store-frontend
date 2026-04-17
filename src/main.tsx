@@ -73,7 +73,10 @@ const router = createBrowserRouter(
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
-    <PayPalScriptProvider options={{ clientId: "YOUR_PAYPAL_CLIENT_ID" }}>
+    <PayPalScriptProvider
+      deferLoading={true}
+      options={{ clientId: "test", currency: "USD", intent: "capture" }}
+    >
       <RouterProvider router={router} />
     </PayPalScriptProvider>
   </Provider>,

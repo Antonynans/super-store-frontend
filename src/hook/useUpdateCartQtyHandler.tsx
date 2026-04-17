@@ -17,14 +17,14 @@ export const useUpdateCartQtyHandler = () => {
       }).unwrap();
 
       toast.success("Cart updated", {
-        position: toast.POSITION.TOP_RIGHT,
+        position: toast.POSITION.BOTTOM_CENTER,
         autoClose: 1500,
       });
     } catch (error: unknown) {
       const err = error as { data?: { message?: string } };
 
       toast.error(err?.data?.message || "Failed to update cart", {
-        position: toast.POSITION.TOP_RIGHT,
+        position: toast.POSITION.BOTTOM_CENTER,
         autoClose: 2000,
       });
     }

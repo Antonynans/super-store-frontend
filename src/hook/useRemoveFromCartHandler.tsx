@@ -9,15 +9,15 @@ export const useRemoveFromCartHandler = () => {
       await removeFromCart(productId).unwrap();
 
       toast.success("Item removed from cart", {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 2000,
+        position: toast.POSITION.BOTTOM_CENTER,
+        autoClose: 1000,
       });
     } catch (error: unknown) {
       const err = error as { data?: { message?: string } };
 
       toast.error(err?.data?.message || "Failed to remove from cart", {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 2000,
+        position: toast.POSITION.BOTTOM_CENTER,
+        autoClose: 1000,
       });
     }
   };

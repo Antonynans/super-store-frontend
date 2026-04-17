@@ -1,13 +1,27 @@
 import { apiSlice } from "./apiSlice";
 import { ORDERS_URL, PAYPAL_URL } from "../constants";
-import { Order, OrderItem } from "../../types";
+import { Order } from "../../types";
+
+type CreateOrderPayload = {
+  orderItems: Array<{
+    _id: string;
+    name: string;
+    qty: number;
+    price: number;
+    images: string[];
+  }>;
+  shippingAddress: {
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
+  };
+  paymentMethod: string;
+};
 
 export const orderApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    createOrder: builder.mutation<
-      Order,
-      Omit<Order, "_id" | "user" | "createdAt" | "updatedAt">
-    >({
+    createOrder: builder.mutation<Order, CreateOrderPayload>({
       query: (order) => ({
         url: ORDERS_URL,
         method: "POST",

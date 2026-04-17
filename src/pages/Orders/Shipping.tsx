@@ -1,18 +1,30 @@
 import { FormEvent, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {
-  saveShippingAddress,
-  savePaymentMethod,
-} from "../../redux/features/cart/cartSlice";
+import { toast } from "react-toastify";
 import ProgressSteps from "../../components/ProgressSteps";
-import { useAppSelector } from "../../redux/store";
+import {
+  useUpdatePaymentMethodMutation,
+  useUpdateShippingAddressMutation,
+} from "../../redux/api/cartApiSlice";
+import {
+  savePaymentMethod,
+  saveShippingAddress,
+} from "../../redux/features/cart/cartSlice";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
+
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(value || 0);
 
 const Shipping = () => {
   const cart = useAppSelector((state) => state.cart);
   const { shippingAddress } = cart;
 
-  const [paymentMethod, setPaymentMethod] = useState("PayPal");
+  const [paymentMethod, setPaymentMethod] = useState(
+    cart.paymentMethod || "PayPal",
+  );
   const [address, setAddress] = useState(shippingAddress.address || "");
   const [city, setCity] = useState(shippingAddress.city || "");
   const [postalCode, setPostalCode] = useState(
@@ -20,194 +32,230 @@ const Shipping = () => {
   );
   const [country, setCountry] = useState(shippingAddress.country || "");
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [updateShippingAddress, { isLoading: isSavingAddress }] =
+    useUpdateShippingAddressMutation();
+  const [updatePaymentMethod, { isLoading: isSavingPayment }] =
+    useUpdatePaymentMethodMutation();
 
-  const submitHandler = (e: FormEvent) => {
-    e.preventDefault();
-
-    dispatch(saveShippingAddress({ address, city, postalCode, country }));
-    dispatch(savePaymentMethod(paymentMethod));
-    navigate("/placeorder");
-  };
+  const itemCount = cart.cartItems.reduce((acc, item) => acc + item.qty, 0);
+  const isSaving = isSavingAddress || isSavingPayment;
 
   useEffect(() => {
-    if (!shippingAddress.address) {
-      navigate("/shipping");
+    if (!cart.cartItems.length) {
+      navigate("/cart");
     }
-  }, [navigate, shippingAddress]);
+  }, [cart.cartItems.length, navigate]);
+
+  const submitHandler = async (e: FormEvent) => {
+    e.preventDefault();
+
+    const nextShippingAddress = { address, city, postalCode, country };
+
+    try {
+      await updateShippingAddress(nextShippingAddress).unwrap();
+      await updatePaymentMethod({ paymentMethod }).unwrap();
+      dispatch(saveShippingAddress(nextShippingAddress));
+      dispatch(savePaymentMethod(paymentMethod));
+      navigate("/placeorder");
+    } catch (error: any) {
+      toast.error(error?.data?.error || error?.data?.message || "Unable to save checkout details");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-surface-muted">
-      <div className="bg-white border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-4xl font-bold text-text-primary">
-              Shipping Details
-            </h1>
-          </div>
-          <p className="text-text-secondary">
-            Complete your shipping information to proceed with checkout
+      <div className="border-b border-border bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-12">
+          <h1 className="text-4xl font-bold text-text-primary">
+            Shipping Details
+          </h1>
+          <p className="mt-2 text-text-secondary">
+            Add your delivery address and confirm PayPal for a smooth checkout.
           </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8">
         <ProgressSteps step1 step2 />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 pb-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="mx-auto max-w-7xl px-4 pb-12">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm p-8">
-              <h2 className="text-2xl font-semibold text-text-primary mb-8">
-                Shipping Address
-              </h2>
-
-              <form onSubmit={submitHandler} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-text-secondary mb-2">
-                    Street Address *
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-3 border border-border-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-light transition"
-                    placeholder="123 Main Street"
-                    value={address}
-                    required
-                    onChange={(e) => setAddress(e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-text-secondary mb-2">
-                    City *
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-3 border border-border-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-light transition"
-                    placeholder="New York"
-                    value={city}
-                    required
-                    onChange={(e) => setCity(e.target.value)}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={submitHandler} className="space-y-8">
+              <div className="rounded-lg bg-white p-8 shadow-sm">
+                <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <label className="block text-sm font-semibold text-text-secondary mb-2">
-                      Postal Code *
+                    <h2 className="text-2xl font-semibold text-text-primary">
+                      Delivery Address
+                    </h2>
+                    <p className="mt-2 text-sm text-text-secondary">
+                      We&apos;ll use this for shipping and order updates.
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-primary-subtle px-4 py-2 text-sm font-semibold text-primary">
+                    Secure checkout
+                  </span>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-text-secondary">
+                      Street Address *
                     </label>
                     <input
                       type="text"
-                      className="w-full px-4 py-3 border border-border-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-light transition"
-                      placeholder="10001"
-                      value={postalCode}
+                      className="w-full rounded-lg border border-border-dark px-4 py-3 transition focus:outline-none focus:ring-2 focus:ring-primary-light"
+                      placeholder="123 Main Street"
+                      value={address}
                       required
-                      onChange={(e) => setPostalCode(e.target.value)}
+                      onChange={(e) => setAddress(e.target.value)}
                     />
                   </div>
+
                   <div>
-                    <label className="block text-sm font-semibold text-text-secondary mb-2">
-                      Country *
+                    <label className="mb-2 block text-sm font-semibold text-text-secondary">
+                      City *
                     </label>
                     <input
                       type="text"
-                      className="w-full px-4 py-3 border border-border-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-light transition"
-                      placeholder="United States"
-                      value={country}
+                      className="w-full rounded-lg border border-border-dark px-4 py-3 transition focus:outline-none focus:ring-2 focus:ring-primary-light"
+                      placeholder="New York"
+                      value={city}
                       required
-                      onChange={(e) => setCountry(e.target.value)}
+                      onChange={(e) => setCity(e.target.value)}
                     />
                   </div>
+
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div>
+                      <label className="mb-2 block text-sm font-semibold text-text-secondary">
+                        Postal Code *
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full rounded-lg border border-border-dark px-4 py-3 transition focus:outline-none focus:ring-2 focus:ring-primary-light"
+                        placeholder="10001"
+                        value={postalCode}
+                        required
+                        onChange={(e) => setPostalCode(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-semibold text-text-secondary">
+                        Country *
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full rounded-lg border border-border-dark px-4 py-3 transition focus:outline-none focus:ring-2 focus:ring-primary-light"
+                        placeholder="United States"
+                        value={country}
+                        required
+                        onChange={(e) => setCountry(e.target.value)}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </form>
-            </div>
+              </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-8 mt-8">
-              <h2 className="text-2xl font-semibold text-text-primary mb-8">
-                Payment Method
-              </h2>
+              <div className="rounded-lg bg-white p-8 shadow-sm">
+                <h2 className="text-2xl font-semibold text-text-primary">
+                  Payment Method
+                </h2>
+                <p className="mb-8 mt-2 text-sm text-text-secondary">
+                  You&apos;ll complete payment on PayPal right after placing the
+                  order.
+                </p>
 
-              <form onSubmit={submitHandler} className="space-y-6">
-                <div className="space-y-4">
-                  <label className="flex items-center p-4 border-2 border-border-dark rounded-lg cursor-pointer hover:border-primary-light hover:bg-primary-subtle transition">
+                <label className="flex cursor-pointer items-center justify-between gap-4 rounded-lg border-2 border-border-dark p-5 transition hover:border-primary-light hover:bg-primary-subtle">
+                  <div className="flex items-center">
                     <input
                       type="radio"
-                      className="w-4 h-4 text-primary"
+                      className="h-4 w-4 text-primary"
                       name="paymentMethod"
                       value="PayPal"
                       checked={paymentMethod === "PayPal"}
                       onChange={(e) => setPaymentMethod(e.target.value)}
                     />
-                    <span className="ml-3 text-text-secondary font-medium">
-                      PayPal or Credit Card
-                    </span>
-                  </label>
-                </div>
+                    <div className="ml-3">
+                      <span className="block font-medium text-text-secondary">
+                        PayPal
+                      </span>
+                      <span className="text-sm text-text-secondary">
+                        Pay with your PayPal balance or connected card.
+                      </span>
+                    </div>
+                  </div>
+                  <span className="rounded-full bg-[#FFC439]/15 px-3 py-1 text-xs font-semibold text-[#003087]">
+                    Recommended
+                  </span>
+                </label>
 
-                <button
-                  className="w-full bg-primary hover:bg-primary text-white font-semibold py-3 px-4 rounded-lg transition duration-300 mt-8"
-                  type="submit"
-                  onClick={submitHandler}
-                >
-                  Continue to Payment
-                </button>
-              </form>
-            </div>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <button
+                    type="button"
+                    className="w-full rounded-lg border border-border px-4 py-3 font-semibold text-text-primary transition hover:bg-surface-muted"
+                    onClick={() => navigate("/cart")}
+                  >
+                    Back to Cart
+                  </button>
+                  <button
+                    className="w-full rounded-lg bg-primary px-4 py-3 font-semibold text-white transition duration-300 hover:bg-primary disabled:cursor-not-allowed disabled:opacity-60"
+                    type="submit"
+                    disabled={isSaving}
+                  >
+                    {isSaving ? "Saving..." : "Review Order"}
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
 
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
-              <h3 className="text-xl font-semibold text-text-primary mb-6">
-                Order Summary
+            <div className="sticky top-4 rounded-lg bg-white p-6 shadow-sm">
+              <h3 className="text-xl font-semibold text-text-primary">
+                Checkout Summary
               </h3>
+              <p className="mb-6 mt-2 text-sm text-text-secondary">
+                {itemCount} item{itemCount === 1 ? "" : "s"} ready to ship
+              </p>
 
-              <div className="space-y-4 mb-6">
-                <div className="flex justify-between text-text-secondary">
-                  <span>Subtotal</span>
-                  <span className="font-medium">
-                    $
-                    {cart.cartItems
-                      .reduce(
-                        (acc: number, item: { qty: number; price: number }) =>
-                          acc + item.qty * item.price,
-                        0,
-                      )
-                      .toFixed(2)}
-                  </span>
-                </div>
+              <div className="mb-6 space-y-4">
                 <div className="flex justify-between text-text-secondary">
                   <span>Items</span>
                   <span className="font-medium">
-                    {cart.cartItems.reduce(
-                      (acc: number, item: { qty: number }) => acc + item.qty,
-                      0,
-                    )}
+                    {formatCurrency(cart.itemsPrice)}
                   </span>
                 </div>
-                <div className="border-t border-border pt-4 flex justify-between">
+                <div className="flex justify-between text-text-secondary">
+                  <span>Shipping</span>
+                  <span className="font-medium">
+                    {cart.shippingPrice === 0
+                      ? "Free"
+                      : formatCurrency(cart.shippingPrice)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-text-secondary">
+                  <span>Tax</span>
+                  <span className="font-medium">
+                    {formatCurrency(cart.taxPrice)}
+                  </span>
+                </div>
+                <div className="flex justify-between border-t border-border pt-4">
                   <span className="text-lg font-semibold text-text-primary">
                     Total
                   </span>
                   <span className="text-2xl font-bold text-primary">
-                    $
-                    {cart.cartItems
-                      .reduce(
-                        (acc: number, item: { qty: number; price: number }) =>
-                          acc + item.qty * item.price,
-                        0,
-                      )
-                      .toFixed(2)}
+                    {formatCurrency(cart.totalPrice)}
                   </span>
                 </div>
               </div>
 
-              <div className="bg-primary-subtle border border-primary-subtle rounded-lg p-4">
-                <p className="text-sm text-primary-dark">
-                  <span className="font-semibold">Shipping:</span> Calculated at
-                  next step
-                </p>
+              <div className="rounded-lg border border-border bg-surface-muted p-4 text-sm text-text-secondary">
+                PayPal opens after order placement so you can finish payment
+                immediately.
               </div>
             </div>
           </div>

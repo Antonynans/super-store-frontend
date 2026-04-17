@@ -17,7 +17,6 @@ const authSlice = createSlice({
       state.error = null;
       localStorage.setItem("userInfo", JSON.stringify(action.payload));
 
-      // Set expiration time (30 days from now)
       const expirationTime = new Date().getTime() + 30 * 24 * 60 * 60 * 1000;
       localStorage.setItem("expirationTime", expirationTime.toString());
     },

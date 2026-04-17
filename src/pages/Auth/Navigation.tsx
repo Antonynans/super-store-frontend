@@ -23,7 +23,12 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../redux/store";
 import { useLogoutMutation } from "../../redux/api/usersApiSlice";
 import { useGetCartQuery } from "../../redux/api/cartApiSlice";
+import { apiSlice } from "../../redux/api/apiSlice";
 import { logout } from "../../redux/features/auth/authSlice";
+import {
+  resetCart,
+  setCartFromBackend,
+} from "../../redux/features/cart/cartSlice";
 import FavoritesCount from "../Products/FavoritesCount";
 import { FiHeart } from "react-icons/fi";
 import AnimatedBadge from "../../components/AnimatedBridge";
@@ -81,10 +86,18 @@ const Navigation = () => {
     return () => window.removeEventListener("resize", handler);
   }, []);
 
+  useEffect(() => {
+    if (userInfo && cart) {
+      dispatch(setCartFromBackend(cart));
+    }
+  }, [cart, dispatch, userInfo]);
+
   const logoutHandler = async () => {
     try {
       await logoutApiCall().unwrap();
       dispatch(logout());
+      dispatch(resetCart());
+      dispatch(apiSlice.util.resetApiState());
       navigate("/login");
     } catch (err) {
       console.error(err);
@@ -183,7 +196,11 @@ const Navigation = () => {
                       {userInfo.username}
                     </span>
 
-                    {dropdownOpen ? <FaChevronUp size={12} /> : <FaChevronDown size={12} />}
+                    {dropdownOpen ? (
+                      <FaChevronUp size={12} />
+                    ) : (
+                      <FaChevronDown size={12} />
+                    )}
                   </button>
 
                   {dropdownOpen && (
@@ -297,23 +314,6 @@ const Navigation = () => {
           >
             <AiOutlineShopping size={20} />
             <span>Shop</span>
-          </NavLink>
-          <NavLink
-            to="/favorite"
-            className={({ isActive }) =>
-              `${mobileLinkClass({ isActive })} relative`
-            }
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <motion.div
-              key={favoriteCount}
-              animate={{ scale: [1, 1.15, 1] }}
-              transition={{ duration: 0.3 }}
-            >
-              <FiHeart size={20} />
-            </motion.div>
-            <span>Favorites</span>
-            <FavoritesCount />
           </NavLink>
 
           <div className="border-t border-border my-1 pt-1" />
