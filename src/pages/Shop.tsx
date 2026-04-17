@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useGetFilteredProductsQuery } from "../redux/api/productApiSlice";
 import { useFetchCategoriesQuery } from "../redux/api/categoryApiSlice";
@@ -30,9 +30,10 @@ const Shop = () => {
     radio: string | string[];
   };
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const category = searchParams.get("category");
   const navigate = useNavigate();
+  const consumedCategoryFilterRef = useRef(false);
 
   const categoriesQuery = useFetchCategoriesQuery();
   const [priceRange, setPriceRange] = useState({
@@ -66,9 +67,25 @@ const Shop = () => {
       );
       if (foundCategory) {
         dispatch(setChecked([foundCategory._id]));
+        consumedCategoryFilterRef.current = true;
+
+        const nextParams = new URLSearchParams(searchParams);
+        nextParams.delete("category");
+        setSearchParams(nextParams, { replace: true });
       }
     }
-  }, [category, categories, dispatch]);
+  }, [category, categories, dispatch, searchParams, setSearchParams]);
+
+  useEffect(() => {
+    if (category) return;
+
+    if (consumedCategoryFilterRef.current) {
+      consumedCategoryFilterRef.current = false;
+      return;
+    }
+
+    dispatch(setChecked([]));
+  }, [category, dispatch]);
 
   useEffect(() => {
     if (!filteredProductsQuery.isLoading && filteredProductsQuery.data) {
@@ -128,6 +145,7 @@ const Shop = () => {
     setSortBy("newest");
     setSearchQuery("");
     dispatch(setChecked([]));
+    setSearchParams({}, { replace: true });
   };
 
   const sortOptions = [
