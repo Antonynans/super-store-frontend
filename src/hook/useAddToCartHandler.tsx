@@ -25,8 +25,15 @@ export const useAddToCartHandler = () => {
         _id: product._id,
         name: product.name,
         price: product.price,
-        image: product.images?.[0],
+        images: product.images,
         countInStock: product.countInStock,
+        product: {
+          _id: product._id,
+          name: product.name,
+          images: product.images,
+          price: product.price,
+          countInStock: product.countInStock,
+        },
         qty,
       }),
     );
@@ -36,8 +43,13 @@ export const useAddToCartHandler = () => {
         productId: product._id,
         qty,
       }).unwrap();
-    } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to add to cart");
+      toast.success("Cart updated", {
+        position: toast.POSITION.BOTTOM_CENTER,
+        autoClose: 1500,
+      });
+    } catch (error: unknown) {
+      const err = error as { data?: { message?: string } };
+      toast.error(err?.data?.message || "Failed to add to cart");
     }
   };
 

@@ -61,6 +61,7 @@ export interface CartItem {
   price: number;
   qty: number;
   _id?: string;
+  countInStock: number;
   createdAt?: string;
   updatedAt?: string;
 }

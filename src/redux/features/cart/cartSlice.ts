@@ -1,12 +1,21 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface CartItem {
-  _id: string;
+  product: {
+    _id: string;
+    name: string;
+    images: string[];
+    price: number;
+    countInStock: number;
+  };
   name: string;
+  images: string[];
   price: number;
-  image?: string;
-  countInStock: number;
   qty: number;
+  _id: string;
+  countInStock: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface CartState {
@@ -41,7 +50,7 @@ const cartSlice = createSlice({
       if (existItem) {
         existItem.qty = Math.min(
           existItem.qty + item.qty,
-          existItem.countInStock,
+          existItem.countInStock || item.countInStock,
         );
       } else {
         state.cartItems.push(item);

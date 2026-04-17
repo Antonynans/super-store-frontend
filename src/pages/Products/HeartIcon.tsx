@@ -2,12 +2,7 @@ import { useEffect } from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useAppSelector, useAppDispatch } from "../../redux/store";
 import { toast } from "react-toastify";
-
-import {
-  addToFavorites,
-  removeFromFavorites,
-  setFavoritesFromBackend,
-} from "../../redux/features/favorites/favoriteSlice";
+import { setFavoritesFromBackend } from "../../redux/features/favorites/favoriteSlice";
 
 import {
   useAddToWishlistMutation,
@@ -53,23 +48,27 @@ const HeartIcon = ({ product }: { product: Product }) => {
 
     try {
       if (isFavorite) {
-        await removeFromWishlist(product?._id);
-        dispatch(removeFromFavorites(product));
+        const updatedWishlist = await removeFromWishlist(product?._id).unwrap();
+        dispatch(setFavoritesFromBackend(updatedWishlist));
         toast.warning("Item removed from wishlist", {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 2000,
+          position: toast.POSITION.BOTTOM_CENTER,
+          autoClose: 1000,
         });
       } else {
-        await addToWishlist({ productId: product?._id });
-        dispatch(addToFavorites(product));
+        const updatedWishlist = await addToWishlist({
+          productId: product?._id,
+        }).unwrap();
+        dispatch(setFavoritesFromBackend(updatedWishlist));
         toast.success("Item added to wishlist", {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 2000,
+          position: toast.POSITION.BOTTOM_CENTER,
+          autoClose: 1000,
         });
       }
     } catch (error: any) {
       toast.error(
-        (error as any)?.data?.message || "Failed to update wishlist",
+        error?.data?.message ||
+          error?.data?.error ||
+          "Failed to update wishlist",
         {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 2000,

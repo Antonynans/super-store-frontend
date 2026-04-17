@@ -19,11 +19,11 @@ export const validateItemStock = (item: {
 
 export const updateCart = (state: Cart) => {
   state.cartItems = state.cartItems.filter((item) => {
-    if (!item.countInStock || item.countInStock <= 0) {
+    if (!item.product.countInStock || item.product.countInStock <= 0) {
       return false;
     }
-    if (item.qty > item.countInStock) {
-      item.qty = item.countInStock;
+    if (item.qty > item.product.countInStock) {
+      item.qty = item.product.countInStock;
     }
     return true;
   });
