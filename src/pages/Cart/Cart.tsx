@@ -389,7 +389,7 @@ const Cart = () => {
                     transition={{ delay: 0.7 }}
                     className="mt-4 rounded-lg bg-green-50 p-3 text-sm text-green-700"
                   >
-                    🎉 Free shipping on your order!
+                     Free shipping on your order!
                   </motion.div>
                 )}
               </motion.div>

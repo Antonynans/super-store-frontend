@@ -52,7 +52,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-surface-muted">
+    <div className="min-h-screen bg-surface-muted py-4">
       <div className=" max-w-7xl mx-auto px-4 lg:flex gap-8">
         <div className="flex items-center gap-4 mb-4">
           <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center  text-2xl font-bold">
