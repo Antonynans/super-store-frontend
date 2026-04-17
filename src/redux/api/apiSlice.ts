@@ -17,17 +17,20 @@ const baseQuery = fetchBaseQuery({
 const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
   let result = await baseQuery(args, api, extraOptions);
 
-  if (result.error && result.error.status === 401) {
+  const isUnauthorized =
+    result.error &&
+    (result.error.status === 401 || result.error.status === 403);
+
+  if (isUnauthorized) {
     if (typeof args === "object" && args.url?.includes("/refresh-token")) {
       api.dispatch(logout());
+      api.dispatch(apiSlice.util.resetApiState());
+      window.location.href = "/login";
       return result;
     }
 
     const refreshResult = await baseQuery(
-      {
-        url: "/api/users/refresh-token",
-        method: "POST",
-      },
+      { url: "/api/users/refresh-token", method: "POST" },
       api,
       extraOptions,
     );
@@ -37,6 +40,8 @@ const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
       result = await baseQuery(args, api, extraOptions);
     } else {
       api.dispatch(logout());
+      api.dispatch(apiSlice.util.resetApiState());
+      window.location.href = "/login";
     }
   }
 
