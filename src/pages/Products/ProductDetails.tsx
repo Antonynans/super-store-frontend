@@ -35,8 +35,15 @@ const ProductDetails = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const dragStartX = useRef<number | null>(null);
-
+  const thumbnailRailRef = useRef<HTMLDivElement | null>(null);
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const thumbnailDragState = useRef({
+    pointerId: null as number | null,
+    startX: 0,
+    startScrollLeft: 0,
+    isDragging: false,
+  });
+  const suppressThumbnailClick = useRef(false);
 
   const {
     data: product,
@@ -82,10 +89,17 @@ const ProductDetails = () => {
   }, [selectedIndex, productImages]);
 
   useEffect(() => {
-    thumbnailRefs.current[selectedIndex]?.scrollIntoView({
+    const rail = thumbnailRailRef.current;
+    const thumbnail = thumbnailRefs.current[selectedIndex];
+
+    if (!rail || !thumbnail) return;
+
+    const targetLeft =
+      thumbnail.offsetLeft - rail.clientWidth / 2 + thumbnail.clientWidth / 2;
+
+    rail.scrollTo({
+      left: Math.max(0, targetLeft),
       behavior: "smooth",
-      block: "nearest",
-      inline: "center",
     });
   }, [selectedIndex]);
 
@@ -105,6 +119,63 @@ const ProductDetails = () => {
     }
 
     dragStartX.current = null;
+  };
+
+  const handleThumbnailPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const rail = thumbnailRailRef.current;
+    if (!rail) return;
+
+    thumbnailDragState.current = {
+      pointerId: e.pointerId,
+      startX: e.clientX,
+      startScrollLeft: rail.scrollLeft,
+      isDragging: false,
+    };
+    suppressThumbnailClick.current = false;
+    rail.setPointerCapture(e.pointerId);
+  };
+
+  const handleThumbnailPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const rail = thumbnailRailRef.current;
+    const state = thumbnailDragState.current;
+
+    if (!rail || state.pointerId !== e.pointerId) return;
+
+    const deltaX = e.clientX - state.startX;
+
+    if (!state.isDragging && Math.abs(deltaX) > 6) {
+      state.isDragging = true;
+      suppressThumbnailClick.current = true;
+    }
+
+    if (!state.isDragging) return;
+
+    rail.scrollLeft = state.startScrollLeft - deltaX;
+  };
+
+  const handleThumbnailPointerEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    const rail = thumbnailRailRef.current;
+    const state = thumbnailDragState.current;
+
+    if (rail && state.pointerId === e.pointerId && rail.hasPointerCapture(e.pointerId)) {
+      rail.releasePointerCapture(e.pointerId);
+    }
+
+    thumbnailDragState.current = {
+      pointerId: null,
+      startX: 0,
+      startScrollLeft: 0,
+      isDragging: false,
+    };
+
+    window.setTimeout(() => {
+      suppressThumbnailClick.current = false;
+    }, 0);
+  };
+
+  const handleThumbnailSelect = (index: number) => {
+    if (suppressThumbnailClick.current) return;
+    setSelectedIndex(index);
   };
 
   const submitHandler = async (e: React.FormEvent) => {
@@ -286,13 +357,22 @@ const ProductDetails = () => {
               </div>
 
               {productImages.length > 1 && (
-                <div className="h-24 flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory touch-pan-x">
+                <div
+                  ref={thumbnailRailRef}
+                  className="h-24 flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-proximity touch-pan-x overscroll-x-contain cursor-grab active:cursor-grabbing select-none"
+                  style={{ WebkitOverflowScrolling: "touch" }}
+                  onPointerDown={handleThumbnailPointerDown}
+                  onPointerMove={handleThumbnailPointerMove}
+                  onPointerUp={handleThumbnailPointerEnd}
+                  onPointerCancel={handleThumbnailPointerEnd}
+                  onPointerLeave={handleThumbnailPointerEnd}
+                >
                   {productImages.map((image: string, index: number) => (
                     <button
                       key={image}
                       ref={(el) => (thumbnailRefs.current[index] = el)}
                       type="button"
-                      onClick={() => setSelectedIndex(index)}
+                      onClick={() => handleThumbnailSelect(index)}
                       className={`relative min-w-[90px] h-24 flex-shrink-0 snap-start overflow-hidden rounded-lg border-2 bg-white transition-all duration-200 ${
                         index === selectedIndex
                           ? "border-primary"

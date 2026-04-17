@@ -61,8 +61,6 @@ const Navigation = () => {
   const cartItems = (cart as any)?.cartItems || [];
   const cartCount = cartItems.reduce((a: number, c: any) => a + c.qty, 0);
 
-  const prevCount = useRef(cartCount);
-
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (
@@ -251,6 +249,19 @@ const Navigation = () => {
           </div>
 
           <div className="flex items-center gap-2 md:hidden">
+            <NavLink
+              to="/favorite"
+              className="relative p-2 text-text-secondary"
+            >
+              <motion.div
+                key={favoriteCount}
+                animate={{ scale: [1, 1.15, 1] }}
+                transition={{ duration: 0.3 }}
+              >
+                <FiHeart size={20} />
+              </motion.div>
+              <FavoritesCount />
+            </NavLink>
             <NavLink to="/cart" className="relative p-2 text-text-secondary">
               <motion.div
                 key={cartCount}

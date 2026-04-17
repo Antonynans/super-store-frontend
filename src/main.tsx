@@ -27,7 +27,7 @@ import Home from "./pages/Home";
 import Favorites from "./pages/Products/Favorites";
 import ProductDetails from "./pages/Products/ProductDetails";
 
-import Cart from "./pages/Cart";
+import Cart from "./pages/Cart/Cart";
 import Shop from "./pages/Shop";
 
 import Shipping from "./pages/Orders/Shipping";

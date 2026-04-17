@@ -1,12 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useGetCartQuery } from "../redux/api/cartApiSlice";
-import { useRemoveFromCartHandler } from "../hook/useRemoveFromCartHandler";
-import { useUpdateCartQtyHandler } from "../hook/useUpdateCartQtyHandler";
-import { CartItem } from "../types";
-import Message from "../components/Message";
-import CartLoader from "../components/skeletons/CartSkeleton";
+import { useGetCartQuery } from "../../redux/api/cartApiSlice";
+import { useRemoveFromCartHandler } from "../../hook/useRemoveFromCartHandler";
+import { useUpdateCartQtyHandler } from "../../hook/useUpdateCartQtyHandler";
+import { CartItem } from "../../types";
+import Message from "../../components/Message";
+import CartLoader from "../../components/skeletons/CartSkeleton";
+import {
+  containerVariants,
+  emptyStateVariants,
+  itemVariants,
+  priceVariants,
+} from "./motionVariants";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -34,67 +40,6 @@ const Cart = () => {
       newSet.delete(productId);
       return newSet;
     });
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        type: "spring" as const,
-        stiffness: 100,
-        damping: 12,
-      },
-    },
-    exit: {
-      opacity: 0,
-      x: 100,
-      scale: 0.5,
-      transition: {
-        type: "spring" as const,
-        stiffness: 200,
-        damping: 20,
-      },
-    },
-  };
-
-  const emptyStateVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        type: "spring" as const,
-        stiffness: 100,
-        damping: 15,
-      },
-    },
-  };
-
-  const priceVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.1,
-        type: "spring" as const,
-        stiffness: 100,
-        damping: 12,
-      },
-    }),
   };
 
   if (isLoading) {
