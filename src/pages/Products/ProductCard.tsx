@@ -21,7 +21,7 @@ const ProductCard = ({ p }: { p: Product }) => {
         style={{ transform: hovered ? "translateY(-4px)" : "none" }}
       >
         <div className="relative overflow-hidden bg-surface-subtle min-w-[250px] sm:min-w-[280px] md:min-w-[300px]  h-48">
-          <div className="relative w-full aspect-[3/4] bg-surface-subtle rounded-t-lg overflow-hidden">
+          <div className="relative w-full aspect-[3/4] bg-surface-subtle rounded-t-lg overflow-hidden h-48">
             <ProductImage src={getPrimaryImage(p?.images)} alt={p?.name} />
           </div>
 

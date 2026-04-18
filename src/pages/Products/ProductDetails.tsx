@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAppSelector } from "../../redux/store";
 import { toast } from "react-toastify";
@@ -7,22 +7,225 @@ import {
   useCreateReviewMutation,
 } from "../../redux/api/productApiSlice";
 import { useAddToCartHandler } from "../../hook/useAddToCartHandler";
-import Loader from "../../components/Loader";
 import {
-  FaBox,
   FaShoppingCart,
   FaStore,
-  FaArrowLeft,
   FaCheck,
   FaChevronLeft,
+  FaChevronRight,
 } from "react-icons/fa";
+import { X } from "lucide-react";
 import moment from "moment";
+import { motion } from "framer-motion";
+import useEmblaCarousel from "embla-carousel-react";
 import HeartIcon from "./HeartIcon";
 import Ratings from "./Ratings";
 import ProductTabs from "./ProductTabs";
 import ProductImage from "../../components/ProductImage";
-import { X } from "lucide-react";
-import { motion } from "framer-motion";
+import { FiAlertTriangle } from "react-icons/fi";
+import ProductDetailsSkeleton from "../../components/skeletons/ProductDetails";
+
+function ThumbStrip({
+  images,
+  selectedIndex,
+  onThumbClick,
+  productName,
+}: {
+  images: string[];
+  selectedIndex: number;
+  onThumbClick: (i: number) => void;
+  productName: string;
+}) {
+  const [emblaRef] = useEmblaCarousel({
+    containScroll: "keepSnaps",
+    dragFree: true,
+    axis: "x",
+  });
+
+  return (
+    <div className="overflow-hidden" ref={emblaRef}>
+      <div className="flex gap-2.5 py-1">
+        {images.map((src, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => onThumbClick(i)}
+            className={`relative flex-shrink-0 w-[68px] h-[68px] rounded-xl overflow-hidden transition-all duration-200 border-2 ${
+              i === selectedIndex
+                ? "border-primary shadow-md scale-105"
+                : "border-transparent opacity-50 hover:opacity-80 hover:scale-[1.02]"
+            }`}
+            aria-label={`View image ${i + 1}`}
+          >
+            <ProductImage src={src} alt={`${productName} thumbnail ${i + 1}`} />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ImageCarousel({
+  images,
+  productName,
+  product,
+}: {
+  images: string[];
+  productName: string;
+  product: any;
+}) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: images.length > 1,
+    duration: 25,
+    skipSnaps: false,
+  });
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi, onSelect]);
+
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+  const scrollTo = useCallback(
+    (i: number) => emblaApi?.scrollTo(i),
+    [emblaApi],
+  );
+
+  return (
+    <div className="space-y-3">
+      <div className="relative rounded-2xl overflow-hidden bg-white border border-border-default shadow-sm group">
+        <div className="overflow-hidden" ref={emblaRef}>
+          <div className="flex touch-pan-y">
+            {images.map((src, i) => (
+              <div
+                key={i}
+                className="relative flex-shrink-0 w-full"
+                style={{ aspectRatio: "1 / 1" }}
+              >
+                <ProductImage
+                  src={src}
+                  alt={`${productName} — image ${i + 1}`}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={scrollPrev}
+              aria-label="Previous image"
+              disabled={!canScrollPrev}
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/85 backdrop-blur-md border border-border-default flex items-center justify-center shadow transition-all duration-200 opacity-0 group-hover:opacity-100 hover:bg-white hover:scale-105 disabled:opacity-20 disabled:cursor-not-allowed"
+            >
+              <FaChevronLeft size={12} className="text-text-primary" />
+            </button>
+            <button
+              onClick={scrollNext}
+              aria-label="Next image"
+              disabled={!canScrollNext}
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/85 backdrop-blur-md border border-border-default flex items-center justify-center shadow transition-all duration-200 opacity-0 group-hover:opacity-100 hover:bg-white hover:scale-105 disabled:opacity-20 disabled:cursor-not-allowed"
+            >
+              <FaChevronRight size={12} className="text-text-primary" />
+            </button>
+          </>
+        )}
+
+        {images.length > 1 && (
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-1.5 lg:hidden">
+            {images.map((_: string, i: number) => (
+              <button
+                key={i}
+                onClick={() => scrollTo(i)}
+                aria-label={`Go to image ${i + 1}`}
+                className={`rounded-full transition-all duration-300 ${
+                  i === selectedIndex
+                    ? "w-5 h-1.5 bg-primary"
+                    : "w-1.5 h-1.5 bg-white/60"
+                }`}
+              />
+            ))}
+          </div>
+        )}
+
+        {images.length > 1 && (
+          <div className="absolute bottom-3 right-3 z-10 hidden lg:block bg-black/40 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full select-none">
+            {selectedIndex + 1} / {images.length}
+          </div>
+        )}
+      </div>
+
+      {images.length > 1 && (
+        <ThumbStrip
+          images={images}
+          selectedIndex={selectedIndex}
+          onThumbClick={scrollTo}
+          productName={productName}
+        />
+      )}
+    </div>
+  );
+}
+
+function ErrorState({
+  message,
+  onBack,
+}: {
+  message?: string;
+  onBack: () => void;
+}) {
+  return (
+    <motion.div
+      className="max-w-lg mx-auto px-4 py-20 text-center"
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-red-50 flex items-center justify-center text-3xl">
+        <FiAlertTriangle />
+      </div>
+      <h1 className="text-2xl font-bold text-text-primary mb-2">
+        Product not found
+      </h1>
+      <p className="text-text-primary-secondary mb-8 text-sm">
+        {message ||
+          "This product may have been removed or is no longer available."}
+      </p>
+      <div className="flex gap-3 justify-center">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-hover text-text-primary font-medium transition hover:bg-surface-active border border-border-default"
+        >
+          <FaChevronLeft size={11} /> Go back
+        </button>
+        <Link
+          to="/shop"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-semibold transition hover:bg-primary-dark shadow-sm"
+        >
+          <FaStore size={13} /> Browse products
+        </Link>
+      </div>
+    </motion.div>
+  );
+}
 
 const ProductDetails = () => {
   const { id: productId } = useParams();
@@ -32,150 +235,22 @@ const ProductDetails = () => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const dragStartX = useRef<number | null>(null);
-  const thumbnailRailRef = useRef<HTMLDivElement | null>(null);
-  const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const thumbnailDragState = useRef({
-    pointerId: null as number | null,
-    startX: 0,
-    startScrollLeft: 0,
-    isDragging: false,
-  });
-  const suppressThumbnailClick = useRef(false);
-
   const {
     data: product,
     isLoading,
     refetch,
     error,
   } = useGetProductDetailsQuery(productId || "");
-
   const { userInfo } = useAppSelector((state) => state.auth);
-
   const [createReview, { isLoading: loadingProductReview }] =
     useCreateReviewMutation();
-
   const addToCartHandler = useAddToCartHandler();
 
-  const productImages = product?.images || [];
-  const activeImage = productImages[selectedIndex] || "";
-
   const getErrorMessage = (err: any) => {
-    if (err && typeof err === "object" && "data" in err) {
+    if (err && "data" in err)
       return err.data?.message || err.data?.error || err.error;
-    } else if (err && typeof err === "object" && "message" in err) {
-      return err.message;
-    } else if (err && typeof err === "object" && "error" in err) {
-      return err.error;
-    }
+    if (err && "message" in err) return err.message;
     return "An error occurred";
-  };
-
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, [productId]);
-
-  useEffect(() => {
-    const preload = (index: number) => {
-      if (productImages[index]) {
-        const img = new Image();
-        img.src = productImages[index];
-      }
-    };
-    preload(selectedIndex + 1);
-    preload(selectedIndex - 1);
-  }, [selectedIndex, productImages]);
-
-  useEffect(() => {
-    const rail = thumbnailRailRef.current;
-    const thumbnail = thumbnailRefs.current[selectedIndex];
-
-    if (!rail || !thumbnail) return;
-
-    const targetLeft =
-      thumbnail.offsetLeft - rail.clientWidth / 2 + thumbnail.clientWidth / 2;
-
-    rail.scrollTo({
-      left: Math.max(0, targetLeft),
-      behavior: "smooth",
-    });
-  }, [selectedIndex]);
-
-  const handlePointerDown = (e: React.PointerEvent) => {
-    dragStartX.current = e.clientX;
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-    if (dragStartX.current === null) return;
-    const delta = dragStartX.current - e.clientX;
-    const threshold = 50;
-
-    if (delta > threshold) {
-      setSelectedIndex((prev) => Math.min(prev + 1, productImages.length - 1));
-    } else if (delta < -threshold) {
-      setSelectedIndex((prev) => Math.max(prev - 1, 0));
-    }
-
-    dragStartX.current = null;
-  };
-
-  const handleThumbnailPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    const rail = thumbnailRailRef.current;
-    if (!rail) return;
-
-    thumbnailDragState.current = {
-      pointerId: e.pointerId,
-      startX: e.clientX,
-      startScrollLeft: rail.scrollLeft,
-      isDragging: false,
-    };
-    suppressThumbnailClick.current = false;
-    rail.setPointerCapture(e.pointerId);
-  };
-
-  const handleThumbnailPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    const rail = thumbnailRailRef.current;
-    const state = thumbnailDragState.current;
-
-    if (!rail || state.pointerId !== e.pointerId) return;
-
-    const deltaX = e.clientX - state.startX;
-
-    if (!state.isDragging && Math.abs(deltaX) > 6) {
-      state.isDragging = true;
-      suppressThumbnailClick.current = true;
-    }
-
-    if (!state.isDragging) return;
-
-    rail.scrollLeft = state.startScrollLeft - deltaX;
-  };
-
-  const handleThumbnailPointerEnd = (e: React.PointerEvent<HTMLDivElement>) => {
-    const rail = thumbnailRailRef.current;
-    const state = thumbnailDragState.current;
-
-    if (rail && state.pointerId === e.pointerId && rail.hasPointerCapture(e.pointerId)) {
-      rail.releasePointerCapture(e.pointerId);
-    }
-
-    thumbnailDragState.current = {
-      pointerId: null,
-      startX: 0,
-      startScrollLeft: 0,
-      isDragging: false,
-    };
-
-    window.setTimeout(() => {
-      suppressThumbnailClick.current = false;
-    }, 0);
-  };
-
-  const handleThumbnailSelect = (index: number) => {
-    if (suppressThumbnailClick.current) return;
-    setSelectedIndex(index);
   };
 
   const submitHandler = async (e: React.FormEvent) => {
@@ -190,341 +265,245 @@ const ProductDetails = () => {
       toast.success("Review created successfully");
       setRating(0);
       setComment("");
-    } catch (error) {
-      toast.error(getErrorMessage(error));
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     }
   };
 
-  return (
-    <div className="bg-surface-subtle min-h-screen py-8">
-      {product && (
-        <div className="max-w-7xl mx-auto px-4 mb-6">
-          <nav className="flex items-center gap-0 text-sm flex-wrap">
+  if (isLoading) {
+    return <ProductDetailsSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div className="bg-surface-subtle min-h-screen">
+        <ErrorState
+          message={getErrorMessage(error as any)}
+          onBack={() => navigate(-1)}
+        />
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="bg-surface-subtle min-h-screen flex justify-center items-center px-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-border-default p-12 text-center max-w-md w-full">
+          <X className="mx-auto mb-4 text-red-400" size={36} />
+          <h1 className="text-xl font-bold text-text-primary mb-2">
+            Product unavailable
+          </h1>
+          <p className="text-text-primary-secondary text-sm mb-6">
+            This product could not be loaded.
+          </p>
+          <div className="flex gap-3 justify-center">
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center gap-1.5 text-primary font-medium hover:text-primary-dark transition-colors duration-200 mr-3"
+              className="px-5 py-2.5 rounded-xl bg-surface-hover border border-border-default text-text-primary font-medium transition hover:bg-surface-active"
             >
-              <FaChevronLeft size={12} />
+              Go back
             </button>
             <Link
               to="/shop"
-              className="text-primary hover:text-primary-dark font-medium transition-colors duration-200"
+              className="px-5 py-2.5 rounded-xl bg-primary text-white font-semibold transition hover:bg-primary-dark"
             >
-              Products
+              Browse products
             </Link>
-            <FaChevronLeft size={12} className="mx-2" />
-            {product.category && (
-              <>
-                <Link
-                  to={`/shop?category=${encodeURIComponent(
-                    typeof product.category === "string"
-                      ? product.category
-                      : product.category?.name || "",
-                  )}`}
-                  className="text-primary hover:text-primary-dark font-medium transition-colors duration-200 capitalize"
-                >
-                  {typeof product.category === "string"
-                    ? product.category
-                    : product.category?.name || "Category"}
-                </Link>
-                <FaChevronLeft size={12} className="mx-2" />
-              </>
-            )}
-            <span
-              className="text-text-primary-secondary font-medium truncate max-w-[200px] sm:max-w-xs md:max-w-sm"
-              title={product.name}
-            >
-              {product.name}
-            </span>
-          </nav>
+          </div>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {isLoading ? (
-        <div className="flex justify-center items-center h-96">
-          <Loader />
-        </div>
-      ) : error ? (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+  const images: string[] = product.images || [];
+  const inStock = product.countInStock && product.countInStock > 0;
+  const categoryName =
+    typeof product.category === "string"
+      ? product.category
+      : product.category?.name || "";
+
+  return (
+    <div className="bg-surface-subtle min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 pt-6 pb-4">
+        <nav
+          className="flex items-center gap-1.5 text-sm flex-wrap"
+          aria-label="Breadcrumb"
         >
-          <div className="max-w-6xl mx-auto px-4 py-16">
-            <div className=" rounded-2xl shadow-xl p-10 text-center relative overflow-hidden">
-              <div className="absolute inset-0  pointer-events-none" />
-
-              <div className="relative z-10 mb-6">
-                <div className="mx-auto w-20 h-20 flex items-center justify-center rounded-full bg-red-100 text-red-500 text-4xl shadow-sm">
-                  ⚠️
-                </div>
-              </div>
-
-              <h1 className="relative z-10 text-3xl sm:text-4xl font-bold text-gray-800 mb-3">
-                Product Not Found
-              </h1>
-
-              <p className="relative z-10 text-gray-500 text-lg max-w-md mx-auto mb-2">
-                {getErrorMessage(error as any) ||
-                  "This product may have been removed or is no longer available."}
-              </p>
-
-              <p className="relative z-10 text-sm text-gray-400">
-                Try exploring similar products or continue shopping.
-              </p>
-
-              <div className="relative z-10 flex flex-col sm:flex-row gap-4 justify-center mt-10">
-                <button
-                  onClick={() => navigate(-1)}
-                  className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-lg transition"
-                >
-                  <FaChevronLeft size={16} />
-                  Go Back
-                </button>
-
-                <Link
-                  to="/shop"
-                  className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-lg transition shadow-md hover:shadow-lg"
-                >
-                  <FaStore size={16} />
-                  Continue Shopping
-                </Link>
-
-                <Link
-                  to="/"
-                  className="flex items-center justify-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-3 px-6 rounded-lg transition"
-                >
-                  <FaBox size={16} />
-                  Home
-                </Link>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      ) : !product ? (
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-            <div className="mb-6">
-              <div className="text-6xl mb-4">
-                <X color="red" />
-              </div>
-              <h1 className="text-3xl font-bold text-text-primary mb-2">
-                Product Unavailable
-              </h1>
-              <p className="text-text-primary-secondary text-lg mb-2">
-                This product could not be loaded. Please try again later.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-              <button
-                onClick={() => navigate(-1)}
-                className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300"
-              >
-                <FaArrowLeft size={18} />
-              </button>
+          <button
+            onClick={() => navigate(-1)}
+            className="p-1.5 rounded-lg text-text-primary-secondary hover:text-text-primary hover:bg-surface-hover transition"
+            aria-label="Go back"
+          >
+            <FaChevronLeft size={11} />
+          </button>
+          <Link
+            to="/shop"
+            className="text-text-primary-secondary hover:text-primary transition font-medium"
+          >
+            Products
+          </Link>
+          {categoryName && (
+            <>
+              <FaChevronRight size={10} className="text-text-subtle" />
               <Link
-                to="/shop"
-                className="flex items-center justify-center gap-2 bg-status-success hover:bg-status-success/90 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300"
+                to={`/shop?category=${encodeURIComponent(categoryName)}`}
+                className="text-text-primary-secondary hover:text-primary transition font-medium capitalize"
               >
-                <FaStore size={18} />
-                Browse Products
+                {categoryName}
               </Link>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-            <div className="flex flex-col">
-              <div
-                className="bg-white lg:h-[38rem] h-96 rounded-lg shadow-lg overflow-hidden mb-6 relative group cursor-grab active:cursor-grabbing select-none"
-                onPointerDown={handlePointerDown}
-                onPointerUp={handlePointerUp}
-              >
-                <ProductImage src={activeImage} alt={product.name} />
+            </>
+          )}
+          <FaChevronRight size={10} className="text-text-subtle" />
+          <span
+            className="text-text-primary font-medium truncate max-w-[200px] sm:max-w-xs"
+            title={product.name}
+          >
+            {product.name}
+          </span>
+        </nav>
+      </div>
 
-                {productImages.length > 1 && (
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 lg:hidden">
-                    {productImages.map((_: string, i: number) => (
-                      <span
-                        key={i}
-                        className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                          i === selectedIndex ? "bg-primary w-3" : "bg-white/60"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {productImages.length > 1 && (
-                <div
-                  ref={thumbnailRailRef}
-                  className="h-24 flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-proximity touch-pan-x overscroll-x-contain cursor-grab active:cursor-grabbing select-none"
-                  style={{ WebkitOverflowScrolling: "touch" }}
-                  onPointerDown={handleThumbnailPointerDown}
-                  onPointerMove={handleThumbnailPointerMove}
-                  onPointerUp={handleThumbnailPointerEnd}
-                  onPointerCancel={handleThumbnailPointerEnd}
-                  onPointerLeave={handleThumbnailPointerEnd}
-                >
-                  {productImages.map((image: string, index: number) => (
-                    <button
-                      key={image}
-                      ref={(el) => (thumbnailRefs.current[index] = el)}
-                      type="button"
-                      onClick={() => handleThumbnailSelect(index)}
-                      className={`relative min-w-[90px] h-24 flex-shrink-0 snap-start overflow-hidden rounded-lg border-2 bg-white transition-all duration-200 ${
-                        index === selectedIndex
-                          ? "border-primary"
-                          : "border-transparent opacity-60 hover:opacity-100"
-                      }`}
-                    >
-                      <ProductImage src={image} alt={product.name} />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="h-fit bg-white rounded-lg shadow-lg p-8 flex flex-col justify-between">
-              <div>
-                <h1 className="md:text-4xl text-2xl font-bold text-text-primary">
-                  {product.name}
-                </h1>
-                <p className="text-text-primary-secondary leading-relaxed mb-4">
-                  {product.description}
-                </p>
-                <div className="flex items-center gap-8 mb-6">
-                  <div>
-                    <Ratings
-                      value={product.rating}
-                      text={`${product.numReviews} reviews`}
-                    />
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="text-xs md:flex items-center gap-1">
-                      <p className="text-text-primary-secondary font-medium">
-                        Added
-                      </p>
-                      <p className="text-text-primary font-semibold">
-                        {moment(product.createdAt).fromNow()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="mb-8">
-                  <p className="text-text-primary-secondary text-sm mb-2 font-medium">
-                    Price
-                  </p>
-                  <p className="text-3xl font-bold text-primary-secondary">
-                    ${product.price}
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-4 border-t pt-8">
-                {product.countInStock > 0 && (
-                  <div className="flex items-center gap-4 mb-7">
-                    <div className="flex items-center border border-[#e5e7eb] rounded-[10px] overflow-hidden">
-                      <button
-                        onClick={() => setQty(Math.max(1, qty - 1))}
-                        style={{
-                          padding: "10px 16px",
-                          border: "none",
-                          background: "#f9fafb",
-                          cursor: "pointer",
-                          fontSize: 18,
-                          fontWeight: 700,
-                        }}
-                      >
-                        −
-                      </button>
-                      <span
-                        style={{
-                          padding: "10px 20px",
-                          fontWeight: 700,
-                          fontSize: 16,
-                        }}
-                      >
-                        {qty}
-                      </span>
-                      <button
-                        onClick={() => setQty(qty + 1)}
-                        style={{
-                          padding: "10px 16px",
-                          border: "none",
-                          background: "#f9fafb",
-                          cursor: "pointer",
-                          fontSize: 18,
-                          fontWeight: 700,
-                        }}
-                      >
-                        +
-                      </button>
-                    </div>
-                    <span className="text-[#6b7280] text-[13px]">
-                      In stock <br />
-                      <strong>{product.countInStock} items</strong>
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex gap-3 items-center h-[60px]">
-                  <button
-                    onClick={() =>
-                      addToCartHandler(product, qty)
-                    }
-                    disabled={
-                      !product.countInStock || product.countInStock <= 0
-                    }
-                    className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
-                      product.countInStock && product.countInStock > 0
-                        ? "bg-primary hover:bg-primary-dark text-white hover:shadow-lg"
-                        : "bg-text-subtle text-white cursor-not-allowed opacity-60"
-                    }`}
-                  >
-                    <FaShoppingCart size={20} />
-                    {product.countInStock && product.countInStock > 0
-                      ? "Add to Cart"
-                      : "Out of Stock"}
-                  </button>
-                  <div className="w-20 h-full flex flex-col items-center justify-center relative border border-[#e5e7eb] rounded-lg">
-                    <HeartIcon product={product} />
-                  </div>
-                </div>
-
-                <div className="bg-primary-subtle p-4 rounded-lg space-y-2">
-                  <p className="text-sm text-primary-dark flex items-center gap-2">
-                    <FaCheck size={14} className="text-status-success" />
-                    Free shipping on orders over $50
-                  </p>
-                  <p className="text-sm text-primary-dark flex items-center gap-2">
-                    <FaCheck size={14} className="text-status-success" />
-                    30-day money back guarantee
-                  </p>
-                  <p className="text-sm text-primary-dark flex items-center gap-2">
-                    <FaCheck size={14} className="text-status-success" />
-                    24/7 customer support
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-lg p-8">
-            <ProductTabs
-              loadingProductReview={loadingProductReview}
-              userInfo={userInfo}
-              submitHandler={submitHandler}
-              rating={rating}
-              setRating={setRating}
-              comment={comment}
-              setComment={setComment}
+      <motion.div
+        className="max-w-7xl mx-auto px-4 pb-16"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-14">
+          <div className="lg:sticky lg:top-6 self-start">
+            <ImageCarousel
+              images={images}
+              productName={product.name}
               product={product}
             />
           </div>
+
+          <div className="space-y-5">
+            <div className="bg-white rounded-2xl shadow-sm border border-border-default p-6 md:p-8">
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <h1 className="text-2xl md:text-3xl font-bold text-text-primary leading-snug">
+                  {product.name}
+                </h1>
+                {inStock ? (
+                  <span className="flex-shrink-0 inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-50 text-green-700 border border-green-100">
+                    <FaCheck size={9} /> In stock
+                  </span>
+                ) : (
+                  <span className="flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full bg-red-50 text-red-600 border border-red-100">
+                    Out of stock
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-4 mb-5 flex-wrap">
+                <Ratings
+                  value={product.rating}
+                  text={`${product.numReviews} reviews`}
+                />
+                <span className="text-xs text-text-primary-secondary">
+                  Added {moment(product.createdAt).fromNow()}
+                </span>
+              </div>
+
+              <p className="text-text-primary-secondary leading-relaxed text-sm md:text-base">
+                {product.description}
+              </p>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-border-default p-6 md:p-8 space-y-5">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-text-subtle mb-1">
+                  Price
+                </p>
+                <p className="text-4xl font-bold text-primary-secondary">
+                  ${product.price}
+                </p>
+              </div>
+
+              {inStock && (
+                <div className="flex items-center gap-4">
+                  <div className="inline-flex items-center rounded-xl border border-border-default overflow-hidden">
+                    <button
+                      onClick={() => setQty(Math.max(1, qty - 1))}
+                      className="w-10 h-10 flex items-center justify-center text-xl font-medium text-text-primary bg-surface-subtle hover:bg-surface-hover active:scale-95 transition"
+                      aria-label="Decrease quantity"
+                    >
+                      −
+                    </button>
+                    <span className="w-10 text-center text-base font-bold text-text-primary select-none">
+                      {qty}
+                    </span>
+                    <button
+                      onClick={() =>
+                        setQty(Math.min(product.countInStock, qty + 1))
+                      }
+                      className="w-10 h-10 flex items-center justify-center text-xl font-medium text-text-primary bg-surface-subtle hover:bg-surface-hover active:scale-95 transition"
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <p className="text-sm text-text-primary-secondary">
+                    <strong className="text-text-primary font-semibold">
+                      {product.countInStock}
+                    </strong>{" "}
+                    available
+                  </p>
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => addToCartHandler(product, qty)}
+                  disabled={!inStock}
+                  className={`flex-1 flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-xl font-semibold text-[15px] transition-all duration-200 ${
+                    inStock
+                      ? "bg-primary hover:bg-primary-dark active:scale-[0.98] text-white shadow-sm hover:shadow-md"
+                      : "bg-surface-subtle text-text-subtle cursor-not-allowed"
+                  }`}
+                >
+                  <FaShoppingCart size={16} />
+                  {inStock ? "Add to cart" : "Out of stock"}
+                </button>
+                <div className="w-14 h-14 flex items-center justify-center rounded-xl border border-border-default bg-surface-subtle hover:bg-surface-hover transition cursor-pointer">
+                  <HeartIcon product={product} />
+                </div>
+              </div>
+
+              <ul className="space-y-2.5 pt-4 border-t border-border-default">
+                {[
+                  "Free shipping on orders over $50",
+                  "30-day money back guarantee",
+                  "24/7 customer support",
+                ].map((perk) => (
+                  <li
+                    key={perk}
+                    className="flex items-center gap-2.5 text-sm text-text-primary-secondary"
+                  >
+                    <span className="w-4 h-4 rounded-full bg-green-50 border border-green-100 flex items-center justify-center flex-shrink-0">
+                      <FaCheck size={8} className="text-status-success" />
+                    </span>
+                    {perk}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
-      )}
+
+        <div className="mt-10 bg-white rounded-2xl shadow-sm border border-border-default p-6 md:p-8">
+          <ProductTabs
+            loadingProductReview={loadingProductReview}
+            userInfo={userInfo}
+            submitHandler={submitHandler}
+            rating={rating}
+            setRating={setRating}
+            comment={comment}
+            setComment={setComment}
+            product={product}
+          />
+        </div>
+      </motion.div>
     </div>
   );
 };

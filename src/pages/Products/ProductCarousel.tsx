@@ -7,7 +7,6 @@ import moment from "moment";
 import { FaBox, FaClock, FaStar, FaStore } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Ratings from "./Ratings";
-import { useState } from "react";
 import CarouselSkeleton from "../../components/skeletons/CaroselSkeleton";
 import getPrimaryImage from "../../Utils/getPrimaryImage";
 import ProductImage from "../../components/ProductImage";
@@ -62,7 +61,6 @@ const ProductCarousel = () => {
                   <ProductImage
                     src={getPrimaryImage(images)}
                     alt={name}
-                    // className={`w-full transition duration-700 group-hover:scale-105`}
                   />
                 </div>
 
