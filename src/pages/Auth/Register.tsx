@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { useRegisterMutation } from "../../redux/api/usersApiSlice";
 import { setCredentials } from "../../redux/features/auth/authSlice";
-import { toast } from "react-toastify";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Register = () => {
   const [username, setName] = useState("");
@@ -12,6 +12,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const Register = () => {
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      setErrorMessage("Passwords do not match");
       return;
     }
     try {
@@ -37,8 +38,7 @@ const Register = () => {
       dispatch(setCredentials({ ...res }));
       navigate(redirect);
     } catch (err: any) {
-      console.log(err);
-      toast.error(err.data.message);
+      setErrorMessage(err?.data?.message || "Registration failed");
     }
   };
 
@@ -90,16 +90,6 @@ const Register = () => {
 
         <div className="relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
-              <svg width="17" height="17" viewBox="0 0 18 18" fill="none">
-                <path
-                  d="M3 5h12M3 9h8M3 13h10"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
             <span className="text-white font-bold text-xl tracking-tight">
               ShopNova
             </span>
@@ -187,6 +177,11 @@ const Register = () => {
           <div className="bg-white rounded-2xl border border-border shadow-sm p-8">
             <form onSubmit={submitHandler} className="space-y-5">
               <div>
+                {errorMessage && (
+                  <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-3">
+                    {errorMessage}
+                  </div>
+                )}
                 <label
                   htmlFor="name"
                   className="block text-[11px] font-semibold text-text-secondary tracking-[2px] uppercase mb-2.5"
@@ -202,7 +197,10 @@ const Register = () => {
                     transition-all duration-200"
                   placeholder="Your full name"
                   value={username}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    setErrorMessage("");
+                  }}
                   required
                 />
               </div>
@@ -223,7 +221,10 @@ const Register = () => {
                     transition-all duration-200"
                   placeholder="you@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setErrorMessage("");
+                  }}
                   required
                 />
               </div>
@@ -245,7 +246,10 @@ const Register = () => {
                       transition-all duration-200"
                     placeholder="Min. 8 characters"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setErrorMessage("");
+                    }}
                     required
                   />
                   <button
@@ -254,30 +258,7 @@ const Register = () => {
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-text-subtle hover:text-text-secondary transition-colors"
                     aria-label="Toggle password"
                   >
-                    {showPassword ? (
-                      <svg
-                        width="16"
-                        height="16"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22" />
-                      </svg>
-                    ) : (
-                      <svg
-                        width="16"
-                        height="16"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
-                    )}
+                    {showPassword ? <FiEye /> : <FiEyeOff />}
                   </button>
                 </div>
 
@@ -329,63 +310,13 @@ const Register = () => {
                     required
                   />
 
-                  {confirmPassword && (
-                    <div className="absolute right-10 top-1/2 -translate-y-1/2">
-                      {password === confirmPassword ? (
-                        <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="#10b981"
-                          strokeWidth="2.5"
-                        >
-                          <path d="M20 6L9 17l-5-5" />
-                        </svg>
-                      ) : (
-                        <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="#ef4444"
-                          strokeWidth="2.5"
-                        >
-                          <path d="M18 6L6 18M6 6l12 12" />
-                        </svg>
-                      )}
-                    </div>
-                  )}
                   <button
                     type="button"
                     onClick={() => setShowConfirm((v) => !v)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-text-subtle hover:text-text-secondary transition-colors"
                     aria-label="Toggle confirm password"
                   >
-                    {showConfirm ? (
-                      <svg
-                        width="16"
-                        height="16"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22" />
-                      </svg>
-                    ) : (
-                      <svg
-                        width="16"
-                        height="16"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
-                    )}
+                    {showConfirm ? <FiEye /> : <FiEyeOff />}
                   </button>
                 </div>
               </div>
@@ -420,24 +351,6 @@ const Register = () => {
               Sign in
             </Link>
           </p>
-
-          <div className="flex items-center justify-center gap-2 mt-8 opacity-40">
-            <svg
-              width="11"
-              height="11"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              className="text-text-subtle"
-            >
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0110 0v4" />
-            </svg>
-            <span className="text-text-subtle text-xs tracking-widest uppercase">
-              256-bit SSL encrypted
-            </span>
-          </div>
         </div>
       </div>
     </div>
