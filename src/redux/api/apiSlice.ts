@@ -41,7 +41,6 @@ const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
     } else {
       api.dispatch(logout());
       api.dispatch(apiSlice.util.resetApiState());
-      window.location.href = "/login";
     }
   }
 

@@ -3,12 +3,13 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { useLoginMutation } from "../../redux/api/usersApiSlice";
 import { setCredentials } from "../../redux/features/auth/authSlice";
-import { toast } from "react-toastify";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -20,42 +21,31 @@ const Login = () => {
   const redirect = sp.get("redirect") || "/";
 
   useEffect(() => {
-    if (userInfo) navigate(redirect);
-  }, [navigate, redirect, userInfo]);
+    if (userInfo && userInfo.token) {
+      navigate(redirect);
+    }
+  }, [userInfo, navigate, redirect]);
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMessage("");
+
     try {
       const res = await login({ email, password }).unwrap();
-      dispatch(setCredentials({ ...res }));
+      if (!res) return;
+      dispatch(setCredentials(res));
       navigate(redirect);
     } catch (err: any) {
-      toast.error(err?.data?.message || err.error);
+      setErrorMessage(err?.data?.message || "Invalid email or password");
     }
   };
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-slate-50 flex">
       <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-6 py-16">
-        <div className="flex items-center gap-2.5 mb-10 lg:hidden">
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-md">
-            <svg width="17" height="17" viewBox="0 0 18 18" fill="none">
-              <path
-                d="M3 5h12M3 9h8M3 13h10"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
-          </div>
-          <span className="text-text-primary font-bold text-xl tracking-tight">
-            ShopNova
-          </span>
-        </div>
-
         <div className="w-full max-w-[400px]">
           <div className="mb-8">
-            <h1 className="text-[28px] font-bold text-text-primary tracking-tight mb-1.5">
+            <h1 className="text-[28px] font-bold text-text-primary mb-1.5">
               Welcome back
             </h1>
             <p className="text-text-secondary text-sm">
@@ -65,139 +55,76 @@ const Login = () => {
 
           <div className="bg-white rounded-2xl border border-border shadow-sm p-8">
             <form onSubmit={submitHandler} className="space-y-5">
+              {errorMessage && (
+                <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-3">
+                  {errorMessage}
+                </div>
+              )}
+
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-[11px] font-semibold text-text-secondary tracking-[2px] uppercase mb-2.5"
-                >
+                <label className="block text-[11px] font-semibold text-text-secondary uppercase mb-2">
                   Email Address
                 </label>
                 <input
                   type="email"
-                  id="email"
-                  className="w-full bg-surface-muted border border-border rounded-xl px-4 py-3.5
-                    text-text-primary text-sm placeholder:text-text-subtle
-                    focus:outline-none focus:border-primary-light focus:ring-2 focus:ring-primary-light/10 focus:bg-white
-                    transition-all duration-200"
-                  placeholder="you@example.com"
+                  className={`w-full border rounded-xl px-4 py-3 text-sm transition
+                    ${errorMessage ? "border-red-300 focus:ring-red-200" : "border-border focus:ring-primary-light"}
+                  `}
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setErrorMessage("");
+                  }}
                   required
                 />
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-2.5">
-                  <label
-                    htmlFor="password"
-                    className="block text-[11px] font-semibold text-text-secondary tracking-[2px] uppercase"
-                  >
-                    Password
-                  </label>
-                  <button
-                    type="button"
-                    className="text-xs text-primary hover:text-primary font-semibold transition-colors"
-                  >
-                    Forgot password?
-                  </button>
-                </div>
+                <label className="block text-[11px] font-semibold text-text-secondary uppercase mb-2">
+                  Password
+                </label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
-                    id="password"
-                    className="w-full bg-surface-muted border border-border rounded-xl px-4 py-3.5 pr-12
-                      text-text-primary text-sm placeholder:text-text-subtle
-                      focus:outline-none focus:border-primary-light focus:ring-2 focus:ring-primary-light/10 focus:bg-white
-                      transition-all duration-200"
-                    placeholder="••••••••"
+                    className={`w-full border rounded-xl px-4 py-3 pr-12 text-sm transition
+                      ${errorMessage ? "border-red-300 focus:ring-red-200" : "border-border focus:ring-primary-light"}
+                    `}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setErrorMessage("");
+                    }}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-text-subtle hover:text-text-secondary transition-colors"
-                    aria-label={
-                      showPassword ? "Hide password" : "Show password"
-                    }
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
                   >
-                    {showPassword ? (
-                      <svg
-                        width="16"
-                        height="16"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22" />
-                      </svg>
-                    ) : (
-                      <svg
-                        width="16"
-                        height="16"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
-                    )}
+                    {showPassword ? <FiEye /> : <FiEyeOff />}
                   </button>
                 </div>
               </div>
 
               <button
-                disabled={isLoading}
+                disabled={isLoading || !email || !password}
                 type="submit"
-                className="w-full bg-primary hover:bg-primary active:scale-[0.98]
-                  text-white font-semibold py-3.5 px-4 rounded-xl text-sm
-                  transition-all duration-200 hover:shadow-[0_6px_20px_rgba(37,99,235,0.35)]
-                  disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none
-                  flex items-center justify-center gap-2 mt-1"
+                className="w-full bg-primary text-white font-semibold py-3 rounded-xl transition disabled:opacity-50"
               >
-                {isLoading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/40 border-t-white" />
-                    Signing in…
-                  </>
-                ) : (
-                  "Sign In →"
-                )}
+                {isLoading ? "Signing in..." : "Sign In"}
               </button>
             </form>
           </div>
 
-          <p className="text-text-secondary text-sm text-center mt-6">
+          <p className="text-sm text-center mt-6">
             Don&apos;t have an account?{" "}
             <Link
               to={redirect ? `/register?redirect=${redirect}` : "/register"}
-              className="text-primary hover:text-primary font-semibold transition-colors"
+              className="text-primary font-semibold"
             >
-              Create one free
+              Create one
             </Link>
           </p>
-
-          <div className="flex items-center justify-center gap-2 mt-8 opacity-50">
-            <svg
-              width="11"
-              height="11"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              className="text-text-subtle"
-            >
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0110 0v4" />
-            </svg>
-            <span className="text-text-subtle text-xs tracking-widest uppercase">
-              256-bit SSL encrypted
-            </span>
-          </div>
         </div>
       </div>
 
