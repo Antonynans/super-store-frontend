@@ -24,6 +24,14 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-5-green?logo=mongodb)](https://www.mongodb.com)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3-blue?logo=tailwindcss)](https://tailwindcss.com)
 
+## 🌍 Live Demo
+
+- **Frontend App:**  
+  👉 https://super-store13e.netlify.app/
+
+- **API Docs (Swagger):**  
+  👉 https://super-store-backend-ws7x.onrender.com/api/docs
+
 ## Table of Contents
 
 - [Features](#features)
