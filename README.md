@@ -25,13 +25,9 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3-blue?logo=tailwindcss)](https://tailwindcss.com)
 
 ## 🌍 Live Demo
-
-- **Frontend App:**  
-  👉 https://super-store13e.netlify.app/
-
-- **API Docs (Swagger):**  
-  👉 https://super-store-backend-ws7x.onrender.com/api/docs
-
+[![Live Demo](https://img.shields.io/badge/Live-Demo-green?style=for-the-badge&logo=vercel)](https://super-store13e.netlify.app/)
+[![API Docs](https://img.shields.io/badge/API-Swagger-blue?style=for-the-badge&logo=swagger)](https://super-store-backend-ws7x.onrender.com/api/docs)
+[![Backend Repo](https://img.shields.io/badge/Backend-Repository-black?style=for-the-badge&logo=github)](https://github.com/Antonynans/Super-store-backend-)
 ## Table of Contents
 
 - [Features](#features)
